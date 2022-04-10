@@ -3,8 +3,8 @@
 ## Requirements
 1. Local instance of MariaDB (scripts and code refers to `127.0.0.1:3306`)
 2. Environmental variables
-    a. `MYSQL_ROOT_PASSWORD`
-    b. `MYSQL_GOVWA_PASSWORD`
+    * `MYSQL_ROOT_PASSWORD`
+    * `MYSQL_GOVWA_PASSWORD`
 
 ## Setup
 Run script `setup.sh`  
