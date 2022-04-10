@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"web/model"
 
 	"github.com/gin-contrib/sessions"
@@ -21,36 +23,53 @@ func loginGet(c *gin.Context) {
 }
 
 func loginPost(c *gin.Context) {
+	var idScan, emailScan, passwordScan string
 	session := sessions.Default(c)
-	user := c.PostForm("email")
-	password := c.PostForm("password")
-	log.Println(user, password)
-	q := fmt.Sprintf("SELECT * FROM govwa.users where email = '%s' and password = '%s'", user, password)
+	// Read POST data
+	emailIn := c.PostForm("email")
+	passwordIn := c.PostForm("password")
+	// debug
+	log.Println(emailIn, passwordIn)
+	// create query
+	q := fmt.Sprintf("SELECT * FROM govwa.users where email = '%s' and password = '%s' limit 1", emailIn, passwordIn)
+	// debug
 	fmt.Println(q)
-	rows, err := model.DB.Query(q)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	//check if correct
-	for rows.Next() {
-		var id, email, password string
-		err := rows.Scan(&id, &email, &password)
-		if err != nil {
-			log.Println(err)
+	// qyuery DB
+	err := model.DB.QueryRow(q).Scan(&idScan, &emailScan, &passwordScan)
+	switch {
+	case err == sql.ErrNoRows:
+		c.JSON(http.StatusOK, gin.H{"error": "CredentialError"})
+		return
+	case err != nil:
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		return
+	default:
+		c.Set("is_logged_in", true)
+		log.Println(idScan, emailScan, passwordScan)
+		session.Set(userid, idScan)
+		session.Set(userEmail, emailScan)
+		if err := session.Save(); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
+			return
 		}
-		log.Println(id, email, password)
+		location := url.URL{Path: "/p/me"}
+		c.Redirect(http.StatusFound, location.RequestURI())
 	}
-	err = rows.Err()
-	if err != nil {
-		log.Println(err)
+}
+
+func logoutHandler(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get(userid)
+	if user == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
+		return
 	}
-	//
-	c.Set("is_logged_in", true)
-	session.Set(userid, user.ID)
-	session.Set(userEmail, user.Email)
+	session.Delete(userid)
 	if err := session.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
+	location := url.URL{Path: "/"}
+	c.Redirect(http.StatusFound, location.RequestURI())
+	//c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 }
