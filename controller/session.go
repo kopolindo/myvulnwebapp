@@ -13,11 +13,10 @@ func ensureLoggedIn(c *gin.Context) {
 	loggedInInterface, _ := c.Get("is_logged_in")
 	loggedIn := loggedInInterface.(bool)
 	if !loggedIn {
-		c.HTML(http.StatusUnauthorized, "error.html", gin.H{
+		c.HTML(http.StatusUnauthorized, "views/error.html", gin.H{
 			"message":      "Unauthorized",
 			"is_logged_in": loggedIn,
 		})
-		//c.AbortWithStatus(http.StatusUnauthorized)
 		c.Abort()
 	}
 }
@@ -28,12 +27,11 @@ func ensureNotLoggedIn(c *gin.Context) {
 	loggedInInterface, _ := c.Get("is_logged_in")
 	loggedIn := loggedInInterface.(bool)
 	if loggedIn {
-		c.HTML(http.StatusUnauthorized, "error.html", gin.H{
+		c.HTML(http.StatusUnauthorized, "views/error.html", gin.H{
 			"message":      "Unauthorized",
 			"is_logged_in": loggedIn,
 		})
 		c.Abort()
-		//c.AbortWithStatus(http.StatusUnauthorized)
 	}
 }
 

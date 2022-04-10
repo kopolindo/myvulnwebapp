@@ -23,11 +23,21 @@
 </head>
 <body>
 	<title>{{ .title }}</title>
-	 <!-- Navigation -->
+	<!-- Navigation -->
 	<nav class="navbar navbar-light bg-light static-top">
 		<div class="container">
-			<a class="navbar-brand" href="/">GO-VWA</a>
-			<a class="btn btn-primary" href="/login">Sign In</a>
+			<ul class="nav navbar-nav navbar-left">
+				<div class="buttons">
+					<a class="navbar-brand" href="/">GO-VWA</a>
+				</div>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<div class="buttons">
+					<a class="btn btn-primary" href="/p/me">Me</a>
+					<a class="btn btn-primary" href="/login">Sign In</a>
+					<a class="btn btn-primary" href="/logout">Logout</a>
+				</div>
+			</ul>
 		</div>
 	</nav>
 {{ end }}

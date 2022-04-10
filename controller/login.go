@@ -57,7 +57,7 @@ func loginPost(c *gin.Context) {
 	}
 }
 
-func logoutHandler(c *gin.Context) {
+func logoutGet(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get(userid)
 	if user == nil {
@@ -71,5 +71,4 @@ func logoutHandler(c *gin.Context) {
 	}
 	location := url.URL{Path: "/"}
 	c.Redirect(http.StatusFound, location.RequestURI())
-	//c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 }
