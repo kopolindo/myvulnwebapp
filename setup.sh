@@ -14,7 +14,7 @@ if [[ "$?" -eq "0" ]]; then
     else
         echo "Database import: KO"
         echo "Exiting (2)"
-        exit 2a
+        exit 2
     fi
 else
     echo "User creation: KO"
