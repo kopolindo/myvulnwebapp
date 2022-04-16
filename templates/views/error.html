@@ -10,8 +10,10 @@
 			text-align: center;
 		}
 	</style>
-	<div class="center">
-		{{ .message }}
+	<div name="error" id="error" class="center">
+		{{ .error }}
+		<br>
+		{{ .errorMessage }}
 	</div>
 {{ template "layouts/footer.html" }}
 {{ end }}

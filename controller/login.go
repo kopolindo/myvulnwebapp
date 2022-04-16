@@ -13,11 +13,14 @@ import (
 )
 
 func loginGet(c *gin.Context) {
+	setUserStatus(c)
+	loggedInInterface, _ := c.Get("is_logged_in")
 	c.HTML(
 		http.StatusOK,
 		"views/login.html",
 		gin.H{
-			"title": "GO - Damn Vulnerable Web Application",
+			"title":        "GO - Damn Vulnerable Web Application",
+			"is_logged_in": loggedInInterface.(bool),
 		},
 	)
 }
@@ -30,18 +33,56 @@ func loginPost(c *gin.Context) {
 	passwordIn := c.PostForm("password")
 	// debug
 	log.Println(emailIn, passwordIn)
-	// create query
-	q := fmt.Sprintf("SELECT * FROM govwa.users where email = '%s' and password = '%s' limit 1", emailIn, passwordIn)
-	// debug
-	fmt.Println(q)
-	// qyuery DB
-	err := model.DB.QueryRow(q).Scan(&idScan, &emailScan, &passwordScan)
+	qu := fmt.Sprintf("SELECT id FROM govwa.users where email = '%s' limit 1", emailIn)
+	errU := model.DB.QueryRow(qu).Scan(&idScan)
 	switch {
-	case err == sql.ErrNoRows:
-		c.JSON(http.StatusOK, gin.H{"error": "CredentialError"})
+	case errU == sql.ErrNoRows:
+		c.HTML(
+			http.StatusInternalServerError,
+			"views/error.html",
+			gin.H{
+				"error":        "Credential error",
+				"errorMessage": "User not found",
+			},
+		)
 		return
-	case err != nil:
-		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+	case errU != nil:
+		c.HTML(
+			http.StatusInternalServerError,
+			"views/error.html",
+			gin.H{
+				"error":        errU.Error(),
+				"errorMessage": qu,
+			},
+		)
+		return
+	}
+	// create query
+	qp := fmt.Sprintf("SELECT * FROM govwa.users where id = '%s' and password = '%s' limit 1", idScan, passwordIn)
+	// debug
+	fmt.Println(qp)
+	// qyuery DB
+	errP := model.DB.QueryRow(qp).Scan(&idScan, &emailScan, &passwordScan)
+	switch {
+	case errP == sql.ErrNoRows:
+		c.HTML(
+			http.StatusInternalServerError,
+			"views/error.html",
+			gin.H{
+				"error":        "Credential error",
+				"errorMessage": "Wrong password",
+			},
+		)
+		return
+	case errP != nil:
+		c.HTML(
+			http.StatusInternalServerError,
+			"views/error.html",
+			gin.H{
+				"error":        errP.Error(),
+				"errorMessage": qp,
+			},
+		)
 		return
 	default:
 		c.Set("is_logged_in", true)

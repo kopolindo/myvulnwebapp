@@ -9,11 +9,13 @@ import (
 
 // Welcome page, redirect here after successfull login
 func me(c *gin.Context) {
+	setUserStatus(c)
+	loggedInInterface, _ := c.Get("is_logged_in")
 	session := sessions.Default(c)
 	//session.Options(cookieOptions)
 	email := session.Get(userEmail)
-	loggedInInterface, _ := c.Get("is_logged_in")
 	c.HTML(http.StatusOK, "views/me.html", gin.H{
+		"title":        "GO - Damn Vulnerable Web Application",
 		"email":        email,
 		"is_logged_in": loggedInInterface.(bool),
 	})

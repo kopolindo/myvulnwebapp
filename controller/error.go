@@ -7,7 +7,10 @@ import (
 )
 
 func notFound(c *gin.Context) {
+	setUserStatus(c)
+	loggedInInterface, _ := c.Get("is_logged_in")
 	c.HTML(http.StatusOK, "views/error.html", gin.H{
-		"message": "Not found",
+		"is_logged_in": loggedInInterface.(bool),
+		"message":      "Not found",
 	})
 }

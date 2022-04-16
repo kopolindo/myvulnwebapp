@@ -1,5 +1,5 @@
 {{ define "views/me.html" }}
-{{ template "layouts/header.html" }}
+{{ template "layouts/header.html" .}}
 <style>
     .center{
         position: absolute;
@@ -13,5 +13,5 @@
 <div class="center">
     Welcome {{ .email }}
 </div>
-{{ template "layouts/footer.html" }}
+{{ template "layouts/footer.html" .}}
 {{end}}
