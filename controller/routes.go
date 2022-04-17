@@ -48,11 +48,12 @@ func Engine() *gin.Engine {
 	})
 	router.Use(setUserStatus)
 	router.GET("/", index)
-	router.GET("/login", loginGet)
-	router.POST("/login", loginPost)
-	router.GET("/logout", logoutGet)
+	router.GET("/login", ensureNotLoggedIn, loginGet)
+	router.POST("/login", ensureNotLoggedIn, loginPost)
+	router.GET("/logout", ensureLoggedIn, logoutGet)
 	// Private Routes
 	private := router.Group("/p")
 	private.GET("/me", ensureLoggedIn, me)
+	private.GET("/shelf", ensureLoggedIn, shelf)
 	return router
 }

@@ -1,0 +1,18 @@
+{{ define "views/403.html" }}
+{{ template "layouts/header.html" .}}
+<style>
+    .center{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+</style>
+<h1 style="text-align: center">{{ .message }}</h1>
+<div class="media" style="max-height: 872.7px;">
+    <img src="/img/Ahahahreal.gif" height="607" alt="403" class="center">
+</div>
+{{ template "layouts/footer.html" .}}
+{{end}}

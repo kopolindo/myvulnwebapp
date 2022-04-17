@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "/home/ax/go/gopath/src/gitlab.com/go-sqli"
+            "program": "/home/ax/go/gopath/src/go-sqli"
         }
     ]
 }
