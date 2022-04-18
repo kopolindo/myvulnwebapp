@@ -6,7 +6,7 @@ sed 's/PASSWORDPLACEHOLDER/'$HASHED_PASSWORD'/g' user_creation.sql | mysql --hos
 if [[ "$?" -eq "0" ]]; then
     echo "User creation: OK"
     echo "Importing database"
-    mysql --host=127.0.0.1 --port=3306 -u root -p"$MYSQL_ROOT_PASSWORD" < create_users_table.sql
+    mysql --host=127.0.0.1 --port=3306 -u root -p"$MYSQL_ROOT_PASSWORD" < db.init.sql
     if [[ "$?" -eq "0" ]]; then
         echo "Database import: OK"
         echo "Exiting (0)"
