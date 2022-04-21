@@ -1,8 +1,9 @@
 #! /bin/bash
-
-echo "Computing hashed password from cleartext one for user creation"
-HASHED_PASSWORD=`mysql -s -u root -p"$MYSQL_ROOT_PASSWORD" --host=127.0.0.1 --port=3306 -e "select password('"$MYSQL_GOVWA_PASSWORD"');" | tail`
-sed 's/PASSWORDPLACEHOLDER/'$HASHED_PASSWORD'/g' user_creation.sql | mysql --host=127.0.0.1 --port=3306 -u root -p"$MYSQL_ROOT_PASSWORD"
+if  [[ `mysql --host=127.0.0.1 --port=3306 -u root -p"${MYSQL_ROOT_PASSWORD}" -se "select count(user) from mysql.user where user='govwauser'"` == "0" ]]; then
+	echo "Computing hashed password from cleartext one for user creation"
+	HASHED_PASSWORD=`mysql -s -u root -p"$MYSQL_ROOT_PASSWORD" --host=127.0.0.1 --port=3306 -e "select password('"$MYSQL_GOVWA_PASSWORD"');" | tail`
+	sed 's/PASSWORDPLACEHOLDER/'$HASHED_PASSWORD'/g' user_creation.sql | mysql --host=127.0.0.1 --port=3306 -u root -p"$MYSQL_ROOT_PASSWORD"
+fi
 if [[ "$?" -eq "0" ]]; then
     echo "User creation: OK"
     echo "Importing database"
