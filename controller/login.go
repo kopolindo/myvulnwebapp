@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"web/model"
 
 	"github.com/gin-contrib/sessions"
@@ -29,8 +30,8 @@ func loginPost(c *gin.Context) {
 	var idScan, emailScan, passwordScan string
 	session := sessions.Default(c)
 	// Read POST data
-	emailIn := c.PostForm("email")
-	passwordIn := c.PostForm("password")
+	emailIn := strings.Replace(c.PostForm("email"), "'", "\\'", -1)
+	passwordIn := strings.Replace(c.PostForm("password"), "'", "\\'", -1)
 	// debug
 	log.Println(emailIn, passwordIn)
 	qu := fmt.Sprintf("SELECT id FROM govwa.users where email = '%s' limit 1", emailIn)
