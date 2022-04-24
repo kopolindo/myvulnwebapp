@@ -4,7 +4,9 @@ import "github.com/gin-contrib/sessions/cookie"
 
 const (
 	userid     = "userid"
+	userRole   = "userRole"
 	userEmail  = "userEmail"
+	sessionID  = "sessionID"
 	cookieName = "_govwa"
 )
 

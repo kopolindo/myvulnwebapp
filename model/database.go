@@ -6,7 +6,7 @@ var DB *sql.DB
 
 func Connect() {
 	var err error
-	DB, err = sql.Open("mysql", "govwauser:zrXzArJUPyPbB8W@/govwa?multiStatements=true")
+	DB, err = sql.Open("mysql", "govwauser:zrXzArJUPyPbB8W@/govwa?multiStatements=true&parseTime=true")
 	if err != nil {
 		panic(err.Error())
 	}

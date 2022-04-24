@@ -27,7 +27,8 @@ func loginGet(c *gin.Context) {
 }
 
 func loginPost(c *gin.Context) {
-	var idScan, emailScan, passwordScan string
+	var emailScan, passwordScan, roleScan string
+	var idScan int
 	session := sessions.Default(c)
 	// Read POST data
 	emailIn := strings.Replace(c.PostForm("email"), "'", "\\'", -1)
@@ -39,7 +40,7 @@ func loginPost(c *gin.Context) {
 	switch {
 	case errU == sql.ErrNoRows:
 		c.HTML(
-			http.StatusInternalServerError,
+			http.StatusOK,
 			"views/error.html",
 			gin.H{
 				"error":        "Credential error",
@@ -49,7 +50,7 @@ func loginPost(c *gin.Context) {
 		return
 	case errU != nil:
 		c.HTML(
-			http.StatusInternalServerError,
+			http.StatusOK,
 			"views/error.html",
 			gin.H{
 				"error":        errU.Error(),
@@ -59,15 +60,15 @@ func loginPost(c *gin.Context) {
 		return
 	}
 	// create query
-	qp := fmt.Sprintf("SELECT * FROM govwa.users where id = '%s' and password = '%s' limit 1", idScan, passwordIn)
+	qp := fmt.Sprintf("SELECT * FROM govwa.users where id = '%d' and password = '%s' limit 1", idScan, passwordIn)
 	// debug
 	fmt.Println(qp)
 	// qyuery DB
-	errP := model.DB.QueryRow(qp).Scan(&idScan, &emailScan, &passwordScan)
+	errP := model.DB.QueryRow(qp).Scan(&idScan, &emailScan, &passwordScan, &roleScan)
 	switch {
 	case errP == sql.ErrNoRows:
 		c.HTML(
-			http.StatusInternalServerError,
+			http.StatusOK,
 			"views/error.html",
 			gin.H{
 				"error":        "Credential error",
@@ -77,7 +78,7 @@ func loginPost(c *gin.Context) {
 		return
 	case errP != nil:
 		c.HTML(
-			http.StatusInternalServerError,
+			http.StatusOK,
 			"views/error.html",
 			gin.H{
 				"error":        errP.Error(),
@@ -87,9 +88,11 @@ func loginPost(c *gin.Context) {
 		return
 	default:
 		c.Set("is_logged_in", true)
-		log.Println(idScan, emailScan, passwordScan)
 		session.Set(userid, idScan)
 		session.Set(userEmail, emailScan)
+		session.Set(userRole, roleScan)
+		log.Println("SAVING LOGIN ACTIVITY")
+		UpdateActivities(idScan, true)
 		if err := session.Save(); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 			return
@@ -101,16 +104,22 @@ func loginPost(c *gin.Context) {
 
 func logoutGet(c *gin.Context) {
 	session := sessions.Default(c)
+
 	user := session.Get(userid)
 	if user == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
+		log.Printf("ERROR invalid session token %v\n", user)
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid session token [%v]\n", user)})
 		return
 	}
-	session.Delete(userid)
+	userID := user.(int)
+	log.Println("SAVING LOGOUT ACTIVITY")
+	UpdateActivities(userID, false)
+	session.Clear()
+	session.Options(sessions.Options{Path: "/", MaxAge: -1})
 	if err := session.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
-	location := url.URL{Path: "/"}
+	location := url.URL{Path: "/login"}
 	c.Redirect(http.StatusFound, location.RequestURI())
 }

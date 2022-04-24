@@ -47,7 +47,9 @@ func Engine() *gin.Engine {
 		c.Redirect(http.StatusFound, location.RequestURI())
 	})
 	router.Use(setUserStatus)
-	router.GET("/", index)
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/login")
+	})
 	router.GET("/login", ensureNotLoggedIn, loginGet)
 	router.POST("/login", ensureNotLoggedIn, loginPost)
 	router.GET("/logout", ensureLoggedIn, logoutGet)

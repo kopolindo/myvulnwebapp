@@ -20,15 +20,32 @@
 	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
 	<!-- Custom styles for this template -->
 	<link href="/css/landing-page.min.css" rel="stylesheet">
+	<style>
+		.gradient-custom {
+		
+		/* fallback for old browsers */
+		background: #ffffff;
+		
+		/* Chrome 10-25, Safari 5.1-6 */
+		background: -webkit-linear-gradient(to right, rgb(246, 132, 40), rgb(0, 73, 144));
+		
+		/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+		background: linear-gradient(to right, rgb(246, 132, 40), rgb(0, 73, 144))
+		}
+	</style>
 </head>
 <body>
-	<title>{{ .title }}</title>
+	<title>GO - Damn Vulnerable Web Application</title>
 	<!-- Navigation -->
+	{{ if not .is_logged_in }}
+	<nav class="navbar gradient-custom static-top">
+	{{ else }}
 	<nav class="navbar navbar-light bg-light static-top">
+	{{ end }}
 		<div class="container">
 			<ul class="nav navbar-nav navbar-left">
 				<div class="buttons">
-					<a class="navbar-brand" href="/">GO-VWA</a>
+					<a class="navbar-brand" href="/" style="color:black">GO-VWA</a>
 				</div>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">

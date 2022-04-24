@@ -11,7 +11,18 @@
     }
 </style>
 <div class="center">
-    Welcome {{ .email }}
+    {{ if eq .role "admin" }}
+        <style>
+            body {
+                background-color: black;
+            }
+        </style>
+       <div>
+        <img src="/img/welcome-master.jpg" alt="welcome-master" class="center">
+      </div>
+    {{ else }}
+        Welcome {{ .email }}
+    {{ end }}
 </div>
 {{ template "layouts/footer.html" .}}
 {{end}}
