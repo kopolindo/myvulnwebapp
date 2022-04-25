@@ -11,6 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// books function is a HTTP handler for GET /books
+// returns ALL the books stored in DB as a slice of Book objects
+// in users' browser bootstrap will render the JSON in a data table
 func books(c *gin.Context) {
 	var books []model.Book
 	setUserStatus(c)
@@ -53,6 +56,10 @@ func books(c *gin.Context) {
 	})
 }
 
+// books function is a HTTP handler for GET /book/:id
+// returns ALL the books stored in DB that match a query
+// if parameter is INT than search for id
+// if parameter is STRING than search for any other field with LIKE
 func book(c *gin.Context) {
 	var books []model.Book
 	var criteria string

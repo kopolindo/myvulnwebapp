@@ -2,6 +2,7 @@ package model
 
 import "database/sql"
 
+// Book struct is to store books information
 type Book struct {
 	ID        int
 	Title     sql.NullString

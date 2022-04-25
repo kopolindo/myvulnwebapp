@@ -13,6 +13,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// loginGet function is a HTTP handler for GET /login
+// it returns to the client an HTML page containing login form
 func loginGet(c *gin.Context) {
 	setUserStatus(c)
 	loggedInInterface, _ := c.Get("is_logged_in")
@@ -26,6 +28,8 @@ func loginGet(c *gin.Context) {
 	)
 }
 
+// loginPost function is a HTTP handler for POST /login
+// it contains authentication logic
 func loginPost(c *gin.Context) {
 	var emailScan, passwordScan, roleScan string
 	var idScan int
@@ -102,6 +106,8 @@ func loginPost(c *gin.Context) {
 	}
 }
 
+// logoutGet function is a HTTP handler for GET /logout
+// it logs out users and redirects them to /login page
 func logoutGet(c *gin.Context) {
 	session := sessions.Default(c)
 

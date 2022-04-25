@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Engine function just set the routes
 func Engine() *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Logger())

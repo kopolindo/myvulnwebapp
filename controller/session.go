@@ -60,6 +60,8 @@ func setUserStatus(c *gin.Context) {
 	c.Next()
 }
 
+// UpdateActivities write given status for a user identified by its ID
+// returns an error
 func UpdateActivities(id int, status bool) (sessionError error) {
 	var query string
 	log.Printf("id (%d) status = %v\t\t", id, status)
@@ -76,6 +78,8 @@ func UpdateActivities(id int, status bool) (sessionError error) {
 	return nil
 }
 
+// CheckActivities checks for a given ID its status (login/logout)
+// returns status and an error
 func CheckActivities(id int) (status bool, sessionError error) {
 	var lastLogin, lastLogout time.Time
 	DBError := model.DB.QueryRow("SELECT last_login,last_logout,status FROM `govwa`.`activities` WHERE id = ? LIMIT 1", id).Scan(
