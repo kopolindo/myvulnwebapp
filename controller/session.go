@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 	"web/model"
@@ -64,13 +63,11 @@ func setUserStatus(c *gin.Context) {
 // returns an error
 func UpdateActivities(id int, status bool) (sessionError error) {
 	var query string
-	log.Printf("id (%d) status = %v\t\t", id, status)
 	if status {
-		query = "INSERT INTO `govwa`.`activities` (`id`, `last_login`, `last_logout`, `status`) values (?, NOW(), NOW(), 1) ON DUPLICATE KEY UPDATE `last_login` = NOW(), `status` = 1"
+		query = "INSERT INTO `govwa`.`activities` (`id`, `last_login`, `status`) values (?, NOW(), 1) ON DUPLICATE KEY UPDATE `last_login` = NOW(), `status` = 1"
 	} else {
 		query = "INSERT INTO `govwa`.`activities` (`id`, `last_logout`, `status`) values (?, NOW(), 0) ON DUPLICATE KEY UPDATE `last_logout` = NOW(), status = 0"
 	}
-	log.Println(query)
 	_, DBError := model.DB.Exec(query, id)
 	if DBError != nil {
 		return fmt.Errorf("error during activity update")
@@ -89,6 +86,9 @@ func CheckActivities(id int) (status bool, sessionError error) {
 	)
 	if DBError != nil {
 		return false, fmt.Errorf("error during activity lookup")
+	}
+	if (!status && (lastLogin.After(lastLogout))) || (status && (lastLogout.After(lastLogin))) {
+		return false, fmt.Errorf("error activity record not sounding")
 	}
 	return status, nil
 }

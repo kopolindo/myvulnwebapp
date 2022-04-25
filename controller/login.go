@@ -38,7 +38,7 @@ func loginPost(c *gin.Context) {
 	emailIn := strings.Replace(c.PostForm("email"), "'", "\\'", -1)
 	passwordIn := strings.Replace(c.PostForm("password"), "'", "\\'", -1)
 	// debug
-	log.Println(emailIn, passwordIn)
+	// log.Println(emailIn, passwordIn)
 	qu := fmt.Sprintf("SELECT id FROM govwa.users where email = '%s' limit 1", emailIn)
 	errU := model.DB.QueryRow(qu).Scan(&idScan)
 	switch {
@@ -66,7 +66,7 @@ func loginPost(c *gin.Context) {
 	// create query
 	qp := fmt.Sprintf("SELECT * FROM govwa.users where id = '%d' and password = '%s' limit 1", idScan, passwordIn)
 	// debug
-	fmt.Println(qp)
+	// fmt.Println(qp)
 	// qyuery DB
 	errP := model.DB.QueryRow(qp).Scan(&idScan, &emailScan, &passwordScan, &roleScan)
 	switch {
@@ -95,7 +95,6 @@ func loginPost(c *gin.Context) {
 		session.Set(userid, idScan)
 		session.Set(userEmail, emailScan)
 		session.Set(userRole, roleScan)
-		log.Println("SAVING LOGIN ACTIVITY")
 		UpdateActivities(idScan, true)
 		if err := session.Save(); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
@@ -118,7 +117,6 @@ func logoutGet(c *gin.Context) {
 		return
 	}
 	userID := user.(int)
-	log.Println("SAVING LOGOUT ACTIVITY")
 	UpdateActivities(userID, false)
 	session.Clear()
 	session.Options(sessions.Options{Path: "/", MaxAge: -1})

@@ -22,7 +22,8 @@ func books(c *gin.Context) {
 	DB := model.DB
 	rows, err := DB.Query("SELECT * FROM `govwa`.`shelf`")
 	if err != nil {
-		log.Println(err.Error())
+		// debug
+		// log.Println(err.Error())
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -38,7 +39,8 @@ func books(c *gin.Context) {
 			&book.Height,
 			&book.Publisher,
 		); err != nil {
-			log.Println(err.Error())
+			// debug
+			// log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
@@ -81,10 +83,12 @@ func book(c *gin.Context) {
 	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
 		criteria = fmt.Sprintf("where id = '%d'", ID)
 	default:
+		// debug
 		log.Println(mytype)
 	}
 	query := baseQuery + criteria
-	log.Println(query)
+	// debug
+	// log.Println(query)
 	DB := model.DB
 	rows, err := DB.Query(query)
 	switch {
@@ -109,11 +113,6 @@ func book(c *gin.Context) {
 		)
 		return
 	}
-	/*if err != nil {
-		log.Println(err.Error())
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}*/
 	defer rows.Close()
 
 	for rows.Next() {
@@ -126,7 +125,8 @@ func book(c *gin.Context) {
 			&book.Height,
 			&book.Publisher,
 		); err != nil {
-			log.Println(err.Error())
+			// debug
+			// log.Println(err.Error())
 			c.HTML(
 				http.StatusInternalServerError,
 				"views/error.html",
