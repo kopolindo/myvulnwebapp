@@ -64,27 +64,28 @@ func books(c *gin.Context) {
 // if parameter is STRING than search for any other field with LIKE
 func book(c *gin.Context) {
 	var books []model.Book
-	var criteria string
+	var criteria, qString string
+	baseQuery := "SELECT * FROM `govwa`.`shelf` "
 	setUserStatus(c)
 	loggedInInterface, _ := c.Get("is_logged_in")
-
-	var ID interface{}
-	var err error
-	ID, err = strconv.Atoi(c.Param("id"))
-	if err != nil {
-		ID = c.Param("id")
+	qString, success := c.GetQuery("q")
+	if !success {
+		c.HTML(
+			http.StatusOK,
+			"views/error.html",
+			gin.H{
+				"error":        fmt.Errorf("no value supplied for q"),
+				"errorMessage": "Empty results",
+			},
+		)
+		return
 	}
 
-	baseQuery := "SELECT * FROM `govwa`.`shelf` "
-
-	switch mytype := ID.(type) {
-	case string:
-		criteria = fmt.Sprintf("where title like '%%%s%%' or author like '%%%s%%' or genre like '%%%s%%' or publisher = '%%%s%%'", ID, ID, ID, ID)
-	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
-		criteria = fmt.Sprintf("where id = '%d'", ID)
-	default:
-		// debug
-		log.Println(mytype)
+	qInt, convErr := strconv.Atoi(qString)
+	if convErr != nil {
+		criteria = fmt.Sprintf("where title like '%%%s%%' or author like '%%%s%%' or genre like '%%%s%%' or publisher = '%%%s%%'", qString, qString, qString, qString)
+	} else {
+		criteria = fmt.Sprintf("where id = '%d'", qInt)
 	}
 	query := baseQuery + criteria
 	// debug

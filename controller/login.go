@@ -100,7 +100,7 @@ func loginPost(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 			return
 		}
-		location := url.URL{Path: "/p/me"}
+		location := url.URL{Path: "/api/me"}
 		c.Redirect(http.StatusFound, location.RequestURI())
 	}
 }

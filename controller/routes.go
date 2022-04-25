@@ -55,9 +55,10 @@ func Engine() *gin.Engine {
 	router.POST("/login", ensureNotLoggedIn, loginPost)
 	router.GET("/logout", ensureLoggedIn, logoutGet)
 	// Private Routes
-	private := router.Group("/p")
+	private := router.Group("/api")
 	private.GET("/me", ensureLoggedIn, me)
 	private.GET("/books", ensureLoggedIn, books)
-	private.GET("/book/:id", ensureLoggedIn, book)
+	private.GET("/book", ensureLoggedIn, book)
+	private.GET("/dashboard", ensureLoggedIn, dashboard)
 	return router
 }
