@@ -7,8 +7,18 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 SET NAMES utf8mb4;
 
+DROP DATABASE IF EXISTS `govwa`;
 CREATE DATABASE `govwa` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 USE `govwa`;
+
+DROP TABLE IF EXISTS `activities`;
+CREATE TABLE `activities` (
+  `id` varchar(100) NOT NULL,
+  `last_login` datetime DEFAULT NULL,
+  `last_logout` datetime DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  UNIQUE KEY `sessionToken_id_IDX` (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='table to store session tokens and check their validity';
 
 DROP TABLE IF EXISTS `shelf`;
 CREATE TABLE `shelf` (
@@ -1248,4 +1258,4 @@ INSERT INTO `users` (`id`, `email`, `password`, `role`) VALUES
 (1001,	'gtaylor@aol.com',	'123456',	'user')
 ON DUPLICATE KEY UPDATE `id` = VALUES(`id`), `email` = VALUES(`email`), `password` = VALUES(`password`), `role` = VALUES(`role`);
 
--- 2022-04-23 13:13:58
+-- 2022-04-27 18:02:55
