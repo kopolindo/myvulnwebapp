@@ -256,7 +256,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `email`, `password`, `role`) VALUES
 (1,	'admin@gvwa.com',	'7cqYNbMdLcuVf2Pw8TAW8zcVmQShLW56',	'admin'),
-(2,	'hakim@msn.com',	'123456789',	'user'),
+(2,	'webmaster@gvwa.com',	'123456789',	'user'),
 (3,	'russotto@yahoo.com',	'111111',	'user'),
 (4,	'jigsaw@live.com',	'password',	'user'),
 (5,	'mbswan@optonline.net',	'qwerty',	'user'),

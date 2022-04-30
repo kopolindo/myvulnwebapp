@@ -51,12 +51,12 @@
 			<ul class="nav navbar-nav navbar-right">
 				<div class="buttons">
 					{{ if .is_logged_in }}
-					{{ if eq .role "admin" }}
-					<a class="btn btn-primary" href="/api/dashboard">Me</a>
-					{{ end }}
 					<form class="btn" action="/api/book">
 						<input id="book" name="q" placeholder="Book"/>
 					</form>
+					{{ if eq .role "admin" }}
+					<a class="btn btn-primary" href="/api/dashboard">Dashboard</a>
+					{{ end }}
 					<a class="btn btn-primary" href="/api/me">Me</a>
 					<a class="btn btn-primary" href="/api/books">Shelf</a>
 					{{ end }}

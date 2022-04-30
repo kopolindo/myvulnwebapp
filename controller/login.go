@@ -64,7 +64,7 @@ func loginPost(c *gin.Context) {
 		return
 	}
 	// create query
-	qp := fmt.Sprintf("SELECT * FROM govwa.users where id = '%d' and password = '%s' limit 1", idScan, passwordIn)
+	qp := fmt.Sprintf("SELECT * FROM govwa.users where id = '%d' and (password = '%s') limit 1", idScan, passwordIn)
 	// debug
 	// fmt.Println(qp)
 	// qyuery DB
@@ -91,6 +91,7 @@ func loginPost(c *gin.Context) {
 		)
 		return
 	default:
+		fmt.Printf("userid: %d\nuserEmail: %s\nuserRole: %s\n", idScan, emailScan, roleScan)
 		c.Set("is_logged_in", true)
 		session.Set(userid, idScan)
 		session.Set(userEmail, emailScan)
