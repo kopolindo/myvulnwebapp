@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"web/model"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,10 +16,7 @@ import (
 // in users' browser bootstrap will render the JSON in a data table
 func books(c *gin.Context) {
 	var books []model.Book
-	setUserStatus(c)
-	loggedInInterface, _ := c.Get("is_logged_in")
-	session := sessions.Default(c)
-	role := session.Get(userRole)
+	envs := SetEnvs(c)
 
 	DB := model.DB
 	rows, err := DB.Query("SELECT * FROM `govwa`.`shelf`")
@@ -55,10 +51,9 @@ func books(c *gin.Context) {
 		return
 	}
 	c.HTML(http.StatusOK, "views/shelf.html", gin.H{
-		"title":        "GO - Damn Vulnerable Web Application",
-		"books":        books,
-		"role":         role,
-		"is_logged_in": loggedInInterface.(bool),
+		"title": "GO - Damn Vulnerable Web Application",
+		"books": books,
+		"envs":  envs,
 	})
 }
 
@@ -70,10 +65,7 @@ func book(c *gin.Context) {
 	var books []model.Book
 	var criteria, qString string
 	baseQuery := "SELECT * FROM `govwa`.`shelf` "
-	setUserStatus(c)
-	loggedInInterface, _ := c.Get("is_logged_in")
-	session := sessions.Default(c)
-	role := session.Get(userRole)
+	envs := SetEnvs(c)
 	qString, success := c.GetQuery("q")
 	if !success {
 		c.HTML(
@@ -159,9 +151,8 @@ func book(c *gin.Context) {
 		return
 	}
 	c.HTML(http.StatusOK, "views/shelf.html", gin.H{
-		"title":        "GO - Damn Vulnerable Web Application",
-		"books":        books,
-		"role":         role,
-		"is_logged_in": loggedInInterface.(bool),
+		"title": "GO - Damn Vulnerable Web Application",
+		"books": books,
+		"envs":  envs,
 	})
 }

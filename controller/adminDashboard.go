@@ -5,19 +5,21 @@ import (
 	"net/http"
 	"web/model"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 func dashboard(c *gin.Context) {
 	var activities []model.Activity
-	setUserStatus(c)
-	loggedInInterface, _ := c.Get("is_logged_in")
-	session := sessions.Default(c)
-	role := session.Get(userRole)
+	envs := SetEnvs(c)
 
 	DB := model.DB
-	rows, err := DB.Query("SELECT a.*,u.email FROM `govwa`.`activities` as a INNER JOIN `govwa`.`users` as u ON u.id = a.id")
+	rows, err := DB.Query(`
+		SELECT
+			a.*,u.email
+		FROM
+			govwa.activities AS a
+		INNER JOIN govwa.users AS u
+			ON u.id = a.id`)
 	if err != nil {
 		// debug
 		// log.Println(err.Error())
@@ -48,9 +50,8 @@ func dashboard(c *gin.Context) {
 		return
 	}
 	c.HTML(http.StatusOK, "views/dashboard.html", gin.H{
-		"title":        "GO - Damn Vulnerable Web Application",
-		"books":        activities,
-		"role":         role,
-		"is_logged_in": loggedInInterface.(bool),
+		"title": "GO - Damn Vulnerable Web Application",
+		"books": activities,
+		"envs":  envs,
 	})
 }

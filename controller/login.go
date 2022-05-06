@@ -13,17 +13,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type AdminUserLogout struct {
+	UserID int `json:"userid" binding:"required"`
+}
+
 // loginGet function is a HTTP handler for GET /login
 // it returns to the client an HTML page containing login form
 func loginGet(c *gin.Context) {
-	setUserStatus(c)
-	loggedInInterface, _ := c.Get("is_logged_in")
+	envs := SetEnvs(c)
 	c.HTML(
 		http.StatusOK,
 		"views/login.html",
 		gin.H{
-			"title":        "GO - Damn Vulnerable Web Application",
-			"is_logged_in": loggedInInterface.(bool),
+			"title": "GO - Damn Vulnerable Web Application",
+			"envs":  envs,
 		},
 	)
 }
@@ -91,7 +94,6 @@ func loginPost(c *gin.Context) {
 		)
 		return
 	default:
-		fmt.Printf("userid: %d\nuserEmail: %s\nuserRole: %s\n", idScan, emailScan, roleScan)
 		c.Set("is_logged_in", true)
 		session.Set(userid, idScan)
 		session.Set(userEmail, emailScan)
@@ -101,7 +103,7 @@ func loginPost(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 			return
 		}
-		location := url.URL{Path: "/api/me"}
+		location := url.URL{Path: "/api/welcome"}
 		c.Redirect(http.StatusFound, location.RequestURI())
 	}
 }
@@ -127,4 +129,17 @@ func logoutGet(c *gin.Context) {
 	}
 	location := url.URL{Path: "/login"}
 	c.Redirect(http.StatusFound, location.RequestURI())
+}
+
+// logoutByAdmin function is a HTTP handler for POST /logout
+// it logs out given users and is invoked by admin (on dashboard page)
+func logoutByAdmin(c *gin.Context) {
+	var user AdminUserLogout
+	c.BindJSON(&user)
+	err := UpdateActivities(user.UserID, false)
+	if err != nil {
+		c.JSON(200, gin.H{"status": err.Error()})
+	} else {
+		c.JSON(200, gin.H{"status": "ok"})
+	}
 }

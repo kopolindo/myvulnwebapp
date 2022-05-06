@@ -1,0 +1,58 @@
+{{ define "views/profile.html" }}
+{{ template "layouts/header.html" .}}
+<style>
+    .center{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+    .list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px;
+    border-top: 1px solid #eee;
+    cursor: pointer
+}
+</style>
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="card text-center">
+        <div class="py-4 p-2">
+            <div>
+                <img src="{{ .profile.Image.String }}" class="rounded" width="600">
+            </div>
+            <div class="mt-3 d-flex flex-row justify-content-center">
+                <h5 style="text-transform: capitalize;">{{ .profile.FirstName.String }} {{ .profile.LastName.String }}</h5>
+            </div>
+            <span>Member since Nov 2018</span>
+        </div>
+        <div>
+            <ul class="list-unstyled list">
+                <li>
+                    <span style="font-weight: bold;">Email</span>
+                    <span class="mr-1">{{ .profile.Email.String }}</span>
+                </li>
+                <li>
+                    <span style="font-weight: bold;">Role</span>
+                    <span class="mr-1">{{ .profile.Role.String }}</span>
+                </li>
+                <li>
+                    <span style="font-weight: bold;">Profile Image Upload</span>
+                    <span class="mr-1">
+                        <form action="/api/profile/{{ .profile.ID }}/upload" method="POST" role="form" enctype="multipart/form-data">
+                            <div class="input-group">
+                                <input class="form-control" id="formFileSm" type="file" name="file">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{{ template "layouts/footer.html" .}}
+{{end}}

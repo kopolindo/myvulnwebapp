@@ -1,0 +1,28 @@
+{{ define "views/welcome.html" }}
+{{ template "layouts/header.html" .}}
+<style>
+    .center{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+</style>
+<div class="center">
+    {{ if eq .envs.Role "admin" }}
+        <style>
+            body {
+                background-color: black;
+            }
+        </style>
+       <div>
+        <img src="/img/welcome-master.jpg" alt="welcome-master" class="center">
+      </div>
+    {{ else }}
+        Welcome {{ .envs.Email }}
+    {{ end }}
+</div>
+{{ template "layouts/footer.html" .}}
+{{end}}

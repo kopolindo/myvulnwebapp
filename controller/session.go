@@ -10,6 +10,44 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Envs struct {
+	LoggedStatus bool
+	Email        string
+	Role         string
+	UserID       int
+}
+
+func SetEnvs(c *gin.Context) (env Envs) {
+	setUserStatus(c)
+	session := sessions.Default(c)
+	loggedin, ok := c.Get("is_logged_in")
+	if !ok {
+		env.LoggedStatus = false
+	} else {
+		env.LoggedStatus = loggedin.(bool)
+	}
+	user := session.Get(userid)
+	if user == nil {
+		env.UserID = -1
+	} else {
+		env.UserID = user.(int)
+	}
+	email := session.Get(userEmail)
+	if email == nil {
+		env.Email = ""
+	} else {
+		env.Email = email.(string)
+	}
+
+	role := session.Get(userRole)
+	if role == nil {
+		env.Role = "user"
+	} else {
+		env.Role = role.(string)
+	}
+	return
+}
+
 // This middleware ensures that a request will be aborted with an error
 // if the user is not logged in
 func ensureLoggedIn(c *gin.Context) {
@@ -68,6 +106,8 @@ func UpdateActivities(id int, status bool) (sessionError error) {
 	} else {
 		query = "INSERT INTO `govwa`.`activities` (`id`, `last_logout`, `status`) values (?, NOW(), 0) ON DUPLICATE KEY UPDATE `last_logout` = NOW(), status = 0"
 	}
+	// DEBUG
+	// fmt.Println(query)
 	_, DBError := model.DB.Exec(query, id)
 	if DBError != nil {
 		return fmt.Errorf("error during activity update")

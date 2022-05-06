@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"web/websocket"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -31,6 +32,7 @@ func Engine() *gin.Engine {
 	//Static Files
 	router.Static("/css", "./static/css")
 	router.Static("/img", "./static/assets/img")
+	router.Static("/public/img", "./static/public/profiles")
 	router.Static("/vendor", "./static/vendor")
 	router.Static("/js", "./static/js")
 	router.StaticFile("/404", "./templates/views/404.html")
@@ -54,9 +56,13 @@ func Engine() *gin.Engine {
 	router.GET("/login", ensureNotLoggedIn, loginGet)
 	router.POST("/login", ensureNotLoggedIn, loginPost)
 	router.GET("/logout", ensureLoggedIn, logoutGet)
+	router.POST("/logout", ensureLoggedIn, logoutByAdmin)
+	router.GET("/ws", websocket.WSHandler)
 	// Private Routes
 	private := router.Group("/api")
-	private.GET("/me", ensureLoggedIn, me)
+	private.GET("/welcome", ensureLoggedIn, welcome)
+	private.GET("/profile/:id", ensureLoggedIn, profile)
+	private.POST("/profile/:id/upload", ensureLoggedIn, imageUpload)
 	private.GET("/books", ensureLoggedIn, books)
 	private.GET("/book", ensureLoggedIn, book)
 	private.GET("/dashboard", ensureLoggedIn, dashboard)

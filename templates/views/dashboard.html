@@ -9,6 +9,12 @@
         transform: translate(-50%, -50%);
         text-align: center;
     }
+    .enabled{
+        color:#f44000;
+    }
+    .disabled{
+        color:#7e7e7e;
+    }
 </style>
 <!-- Bootstrap DataTables CSS -->
 <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet" id="bootstrap-css">
@@ -25,6 +31,7 @@
                 <th scope="col">Last Login</th>
                 <th scope="col">Last Logout</th>
                 <th scope="col">Status</th>
+                <th scope="col">Actions</th>
             </tr>
         </thead>
     </table>
@@ -42,11 +49,49 @@
                 {"mDataProp": "LastLogin.Time", className: "text-center"},
                 {"mDataProp": "LastLogout.Time", className: "text-center"},
                 { "render": function (data, type, JsonResultRow, meta) {
-                            return '<img src="/img/'+JsonResultRow.Status.Int32+'.png" width="10" height="10">';
-                        }, className: "text-center"}
+                            return '<img id="semaphore" src="/img/'+JsonResultRow.Status.Int32+'.png" width="10" height="10">';
+                        }, className: "text-center"},
+                { "render": forceLogoutIcon, className: "text-center"}
             ]
         } );
     } );
+
+    function forceLogoutIcon(data, type, JsonResultRow, meta) {
+        tag = '<a href="#" id="forceLogout" onclick="terminateSession('+JsonResultRow.ID+');">';
+        if (JsonResultRow.Status.Int32 === 1){
+            tag += '<i class="bi bi-x-circle-fill enabled"></i></a>';
+        } else {
+            tag = '<i class="bi bi-x-circle-fill disabled"></i>';
+        }
+        return tag;
+    }
+
+    function terminateSession(id){
+        var headers = {
+            "Content-Type": "application/json",                                                                                                
+            "Access-Control-Origin": "*"
+        }
+        var data = {
+            "userid": id
+        }
+    
+        fetch("http://localhost:8080/logout", {
+            method: "POST",
+            headers: headers,
+            body:  JSON.stringify(data)
+        })
+        .then(function(response){ 
+            return response.json();
+        })
+        .then(function(data){ 
+            console.log(data);
+        });
+        //via websocket:
+        //$('#semaphore').attr("src","/img/1.png");
+        //$("#forceLogout").contents().unwrap();
+        //$('.bi.bi-x-circle-fill.enabled').attr("class","bi bi-x-circle-fill disabled");
+    }
+
 </script>
 {{ template "layouts/footer.html" .}}
 {{end}}
