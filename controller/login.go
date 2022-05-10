@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 	"web/model"
 
 	"github.com/gin-contrib/sessions"
@@ -34,7 +35,7 @@ func loginGet(c *gin.Context) {
 // loginPost function is a HTTP handler for POST /login
 // it contains authentication logic
 func loginPost(c *gin.Context) {
-	var emailScan, passwordScan, roleScan string
+	var emailScan, passwordScan, roleScan, fnameScan, lnameScan string
 	var idScan int
 	session := sessions.Default(c)
 	// Read POST data
@@ -67,11 +68,21 @@ func loginPost(c *gin.Context) {
 		return
 	}
 	// create query
-	qp := fmt.Sprintf("SELECT * FROM govwa.users where id = '%d' and (password = '%s') limit 1", idScan, passwordIn)
+	qp := fmt.Sprintf(`
+		SELECT
+			u.id,
+			u.email,
+			u.password,
+			u.role,
+			p.first_name,
+			p.last_name
+		FROM govwa.users as u
+		INNER JOIN govwa.profiles as p ON u.id = p.id
+		WHERE u.id = '%d' and (u.password = '%s') limit 1`, idScan, passwordIn)
 	// debug
 	// fmt.Println(qp)
 	// qyuery DB
-	errP := model.DB.QueryRow(qp).Scan(&idScan, &emailScan, &passwordScan, &roleScan)
+	errP := model.DB.QueryRow(qp).Scan(&idScan, &emailScan, &passwordScan, &roleScan, &fnameScan, &lnameScan)
 	switch {
 	case errP == sql.ErrNoRows:
 		c.HTML(
@@ -96,6 +107,8 @@ func loginPost(c *gin.Context) {
 	default:
 		c.Set("is_logged_in", true)
 		session.Set(userid, idScan)
+		session.Set(firstName, fnameScan)
+		session.Set(lastName, lnameScan)
 		session.Set(userEmail, emailScan)
 		session.Set(userRole, roleScan)
 		UpdateActivities(idScan, true)
@@ -135,11 +148,25 @@ func logoutGet(c *gin.Context) {
 // it logs out given users and is invoked by admin (on dashboard page)
 func logoutByAdmin(c *gin.Context) {
 	var user AdminUserLogout
+	var lastLogout time.Time
+	var firstName string
 	c.BindJSON(&user)
 	err := UpdateActivities(user.UserID, false)
 	if err != nil {
 		c.JSON(200, gin.H{"status": err.Error()})
 	} else {
-		c.JSON(200, gin.H{"status": "ok"})
+		query := fmt.Sprintf(`
+			SELECT
+				p.first_name,
+				a.last_logout
+			FROM govwa.activities as a
+			INNER JOIN govwa.profiles as p ON a.id = p.id
+			WHERE a.id = %d LIMIT 1`,
+			user.UserID)
+		DBError := model.DB.QueryRow(query).Scan(&firstName, &lastLogout)
+		if DBError != nil {
+			fmt.Printf("error during activity lookup\n\t%s", DBError.Error())
+		}
+		c.JSON(200, gin.H{"status": "ok", "firstName": firstName, "lastLogout": lastLogout.String()})
 	}
 }

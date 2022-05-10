@@ -59,6 +59,7 @@
 					<a class="btn btn-primary" href="/api/dashboard">Dashboard</a>
 					{{ end }}
 					<a class="btn btn-primary" href="/api/profile/{{ .envs.UserID }}">Me</a>
+					<a class="btn btn-primary" href="/api/profile/update">Profile Update</a>
 					<a class="btn btn-primary" href="/api/books">Shelf</a>
 					{{ end }}
 					{{ if not .envs.LoggedStatus }}

@@ -41,6 +41,31 @@
     $(document).ready(function() {
         $('#dashboard').DataTable( {
         "responsive": true,
+        "columnDefs": [ {
+            "targets": 0,
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).attr('id',rowData.ID+'_id')
+            }
+        },{
+            "targets": 1,
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).attr('id',rowData.ID+'_email')
+            }
+        },{
+            "targets": 2,
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).attr('id',rowData.ID+'_login');
+                date = new Date(cellData);
+                $(td).text(date.toISOString());
+            }
+        },{
+            "targets": 3,
+            "createdCell": function (td, cellData, rowData, row, col) {
+                $(td).attr('id',rowData.ID+'_logout');
+                date = new Date(cellData);
+                $(td).text(date.toISOString());
+            }
+        }],
         "aaData":{{ .books }},
         "aoColumns":
             [
@@ -49,7 +74,7 @@
                 {"mDataProp": "LastLogin.Time", className: "text-center"},
                 {"mDataProp": "LastLogout.Time", className: "text-center"},
                 { "render": function (data, type, JsonResultRow, meta) {
-                            return '<img id="semaphore" src="/img/'+JsonResultRow.Status.Int32+'.png" width="10" height="10">';
+                            return '<img id="'+JsonResultRow.ID+'_semaphore" src="/img/'+JsonResultRow.Status.Int32+'.png" width="10" height="10">';
                         }, className: "text-center"},
                 { "render": forceLogoutIcon, className: "text-center"}
             ]
@@ -57,11 +82,11 @@
     } );
 
     function forceLogoutIcon(data, type, JsonResultRow, meta) {
-        tag = '<a href="#" id="forceLogout" onclick="terminateSession('+JsonResultRow.ID+');">';
+        tag = '<a href="#" id="'+JsonResultRow.ID+'_forceLogout" onclick="terminateSession('+JsonResultRow.ID+');">';
         if (JsonResultRow.Status.Int32 === 1){
-            tag += '<i class="bi bi-x-circle-fill enabled"></i></a>';
+            tag += '<i class="bi bi-x-circle-fill enabled '+JsonResultRow.ID+'"></i></a>';
         } else {
-            tag = '<i class="bi bi-x-circle-fill disabled"></i>';
+            tag = '<i class="bi bi-x-circle-fill disabled '+JsonResultRow.ID+'"></i>';
         }
         return tag;
     }
@@ -82,16 +107,32 @@
         })
         .then(function(response){ 
             return response.json();
-        })
-        .then(function(data){ 
-            console.log(data);
+        }) .then(data => {
+            if(data.status == "ok"){
+               $('#'+id+'_semaphore').attr('src','/img/0.png');
+               $('#'+id+'_forceLogout').contents().unwrap();
+               $('.bi.bi-x-circle-fill.enabled.'+id+'').attr('class','bi bi-x-circle-fill disabled '+id+'');
+               date = new Date('"'+data.lastLogout+'"');
+               $('#'+id+'_logout').text(date);
+               console.log(data.lastLogout);
+               $('#name').text(data.firstName);
+               $('.modal').modal('toggle');
+               setTimeout(function(){
+                    $('.modal').modal('toggle');
+               }, 2000);
+            }
         });
-        //via websocket:
-        //$('#semaphore').attr("src","/img/1.png");
-        //$("#forceLogout").contents().unwrap();
-        //$('.bi.bi-x-circle-fill.enabled').attr("class","bi bi-x-circle-fill disabled");
     }
-
 </script>
+<!-- Modal -->
+<div class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Session of user <span id="name"></span> terminated</p>
+            </div>
+        </div>
+    </div>
+</div>
 {{ template "layouts/footer.html" .}}
 {{end}}

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"web/websocket"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -57,12 +56,12 @@ func Engine() *gin.Engine {
 	router.POST("/login", ensureNotLoggedIn, loginPost)
 	router.GET("/logout", ensureLoggedIn, logoutGet)
 	router.POST("/logout", ensureLoggedIn, logoutByAdmin)
-	router.GET("/ws", websocket.WSHandler)
 	// Private Routes
 	private := router.Group("/api")
 	private.GET("/welcome", ensureLoggedIn, welcome)
 	private.GET("/profile/:id", ensureLoggedIn, profile)
-	private.POST("/profile/:id/upload", ensureLoggedIn, imageUpload)
+	private.GET("/profile/update", ensureLoggedIn, profileUpdateGet)
+	private.POST("/profile/:id/update", ensureLoggedIn, profileUpdate)
 	private.GET("/books", ensureLoggedIn, books)
 	private.GET("/book", ensureLoggedIn, book)
 	private.GET("/dashboard", ensureLoggedIn, dashboard)

@@ -29,29 +29,16 @@
             </div>
             <span>Member since Nov 2018</span>
         </div>
-        <div>
-            <ul class="list-unstyled list">
-                <li>
-                    <span style="font-weight: bold;">Email</span>
-                    <span class="mr-1">{{ .profile.Email.String }}</span>
-                </li>
-                <li>
-                    <span style="font-weight: bold;">Role</span>
-                    <span class="mr-1">{{ .profile.Role.String }}</span>
-                </li>
-                <li>
-                    <span style="font-weight: bold;">Profile Image Upload</span>
-                    <span class="mr-1">
-                        <form action="/api/profile/{{ .profile.ID }}/upload" method="POST" role="form" enctype="multipart/form-data">
-                            <div class="input-group">
-                                <input class="form-control" id="formFileSm" type="file" name="file">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        </form>
-                    </span>
-                </li>
-            </ul>
-        </div>
+        <ul class="list-unstyled list">
+            <li>
+                <span style="font-weight: bold;">Email</span>
+                <span class="mr-1">{{ .profile.Email.String }}</span>
+            </li>
+            <li>
+                <span style="font-weight: bold;">Role</span>
+                <span class="mr-1">{{ .profile.Role.String }}</span>
+            </li>
+        </ul>
     </div>
 </div>
 {{ template "layouts/footer.html" .}}

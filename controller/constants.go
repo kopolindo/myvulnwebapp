@@ -6,6 +6,8 @@ const (
 	userid             = "userid"
 	userRole           = "userRole"
 	userEmail          = "userEmail"
+	firstName          = "firstName"
+	lastName           = "lastName"
 	sessionID          = "sessionID"
 	cookieName         = "_govwa"
 	uploadPath         = "static/public"

@@ -14,6 +14,8 @@ type Envs struct {
 	LoggedStatus bool
 	Email        string
 	Role         string
+	FirstName    string
+	LastName     string
 	UserID       int
 }
 
@@ -32,13 +34,24 @@ func SetEnvs(c *gin.Context) (env Envs) {
 	} else {
 		env.UserID = user.(int)
 	}
+	FirstName := session.Get(firstName)
+	if FirstName == nil {
+		env.FirstName = ""
+	} else {
+		env.FirstName = FirstName.(string)
+	}
+	LastName := session.Get(lastName)
+	if LastName == nil {
+		env.LastName = ""
+	} else {
+		env.LastName = LastName.(string)
+	}
 	email := session.Get(userEmail)
 	if email == nil {
 		env.Email = ""
 	} else {
 		env.Email = email.(string)
 	}
-
 	role := session.Get(userRole)
 	if role == nil {
 		env.Role = "user"

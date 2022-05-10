@@ -1,0 +1,42 @@
+{{ define "views/profileUpdate.html" }}
+{{ template "layouts/header.html" .}}
+<style>
+    .center{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+    .list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px;
+    border-top: 1px solid #eee;
+    cursor: pointer
+}
+</style>
+<div class="text-center">
+    <h2 class="text-center">Profile Update</h2>
+</div>
+<div class="container d-flex justify-content-center center">
+    <form action="/api/profile/{{ .profile.ID }}/update" method="POST" role="form" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" name="firstName" id="firstName" aria-describedby="firstName" placeholder="{{ .profile.FirstName.String }}">
+        </div>
+        <div class="mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" name="lastName" id="lastName" aria-describedby="lastName" placeholder="{{ .profile.LastName.String }}">
+        </div>
+        <div class="mb-3">
+            <label for="profileImage" class="form-label">Profile Image</label>
+            <input class="form-control" id="formFileSm" type="file" name="file">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{{ template "layouts/footer.html" .}}
+{{end}}
