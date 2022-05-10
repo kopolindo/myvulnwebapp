@@ -15,5 +15,6 @@ const (
 )
 
 var (
-	sessionStore = cookie.NewStore([]byte("se45rfgy7yuhji9okmopokmnuygvfr5es2q"))
+	sessionStore     = cookie.NewStore([]byte("se45rfgy7yuhji9okmopokmnuygvfr5es2q"))
+	dashboardChanged = bool(false) // false means "not changed"
 )

@@ -6,7 +6,7 @@ import "database/sql"
 type Activity struct {
 	ID         int
 	Email      sql.NullString
-	LastLogin  sql.NullTime
-	LastLogout sql.NullTime
+	LastLogin  string
+	LastLogout string
 	Status     sql.NullInt32
 }

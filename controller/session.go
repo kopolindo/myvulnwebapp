@@ -125,6 +125,7 @@ func UpdateActivities(id int, status bool) (sessionError error) {
 	if DBError != nil {
 		return fmt.Errorf("error during activity update")
 	}
+	setDashboardStatus(true)
 	return nil
 }
 

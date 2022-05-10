@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 	"web/model"
 
 	"github.com/gin-contrib/sessions"
@@ -148,7 +147,8 @@ func logoutGet(c *gin.Context) {
 // it logs out given users and is invoked by admin (on dashboard page)
 func logoutByAdmin(c *gin.Context) {
 	var user AdminUserLogout
-	var lastLogout time.Time
+	var lastLogoutScan sql.NullTime
+	var layout = "2006-01-02 15:04:05"
 	var firstName string
 	c.BindJSON(&user)
 	err := UpdateActivities(user.UserID, false)
@@ -163,10 +163,12 @@ func logoutByAdmin(c *gin.Context) {
 			INNER JOIN govwa.profiles as p ON a.id = p.id
 			WHERE a.id = %d LIMIT 1`,
 			user.UserID)
-		DBError := model.DB.QueryRow(query).Scan(&firstName, &lastLogout)
+		DBError := model.DB.QueryRow(query).Scan(&firstName, &lastLogoutScan)
 		if DBError != nil {
 			fmt.Printf("error during activity lookup\n\t%s", DBError.Error())
 		}
-		c.JSON(200, gin.H{"status": "ok", "firstName": firstName, "lastLogout": lastLogout.String()})
+		lastLogout := lastLogoutScan.Time.Format(layout)
+		fmt.Println(lastLogout)
+		c.JSON(200, gin.H{"status": "ok", "firstName": firstName, "lastLogout": lastLogout})
 	}
 }

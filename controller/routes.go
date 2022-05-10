@@ -65,5 +65,6 @@ func Engine() *gin.Engine {
 	private.GET("/books", ensureLoggedIn, books)
 	private.GET("/book", ensureLoggedIn, book)
 	private.GET("/dashboard", ensureLoggedIn, dashboard)
+	private.GET("/dashboard/status", ensureLoggedIn, dashboardStatus)
 	return router
 }

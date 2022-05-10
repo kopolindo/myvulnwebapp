@@ -36,7 +36,6 @@
         </thead>
     </table>
 </div>
-
 <script>
     $(document).ready(function() {
         $('#dashboard').DataTable( {
@@ -49,30 +48,26 @@
         },{
             "targets": 1,
             "createdCell": function (td, cellData, rowData, row, col) {
-                $(td).attr('id',rowData.ID+'_email')
+                $(td).attr('id',rowData.ID+'_email');
             }
         },{
             "targets": 2,
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).attr('id',rowData.ID+'_login');
-                date = new Date(cellData);
-                $(td).text(date.toISOString());
             }
         },{
             "targets": 3,
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).attr('id',rowData.ID+'_logout');
-                date = new Date(cellData);
-                $(td).text(date.toISOString());
             }
         }],
-        "aaData":{{ .books }},
+        "aaData":{{ .activities }},
         "aoColumns":
             [
                 {"mDataProp": "ID", className: "text-center"},
                 {"mDataProp": "Email.String", className: "text-center"},
-                {"mDataProp": "LastLogin.Time", className: "text-center"},
-                {"mDataProp": "LastLogout.Time", className: "text-center"},
+                {"mDataProp": "LastLogin", className: "text-center"},
+                {"mDataProp": "LastLogout", className: "text-center"},
                 { "render": function (data, type, JsonResultRow, meta) {
                             return '<img id="'+JsonResultRow.ID+'_semaphore" src="/img/'+JsonResultRow.Status.Int32+'.png" width="10" height="10">';
                         }, className: "text-center"},
@@ -109,20 +104,27 @@
             return response.json();
         }) .then(data => {
             if(data.status == "ok"){
-               $('#'+id+'_semaphore').attr('src','/img/0.png');
-               $('#'+id+'_forceLogout').contents().unwrap();
-               $('.bi.bi-x-circle-fill.enabled.'+id+'').attr('class','bi bi-x-circle-fill disabled '+id+'');
-               date = new Date('"'+data.lastLogout+'"');
-               $('#'+id+'_logout').text(date);
-               console.log(data.lastLogout);
-               $('#name').text(data.firstName);
-               $('.modal').modal('toggle');
-               setTimeout(function(){
-                    $('.modal').modal('toggle');
-               }, 2000);
+                $('#'+id+'_semaphore').attr('src','/img/0.png');
+                $('#'+id+'_forceLogout').contents().unwrap();
+                $('.bi.bi-x-circle-fill.enabled.'+id+'').attr('class','bi bi-x-circle-fill disabled '+id+'');
+                $('#'+id+'_logout').text(data.lastLogout);
+                $('#name').text(data.firstName);
+                $('.modal').modal('toggle');
+                setTimeout(function(){
+                    location.reload();
+                }, 2000);
             }
         });
     }
+    setInterval(function(){
+        fetch('http://localhost:8080/api/dashboard/status')
+        .then(response => response.json())
+        .then(function(data){
+            if(data.status===true){
+                location.reload();
+            }
+        });
+    }, 1000);
 </script>
 <!-- Modal -->
 <div class="modal" tabindex="-1">

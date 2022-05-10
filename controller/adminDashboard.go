@@ -9,42 +9,46 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// dashboard function handles GET to /api/dashboard route
+// returns a model.Activity slice containing
+//		ID, email, lastLogin, lastLogout, status (logged in yes/no), force logout button
 func dashboard(c *gin.Context) {
-	var activities []model.Activity
 	envs := SetEnvs(c)
-
 	DB := model.DB
-	rows, err := DB.Query(`
-		SELECT
-			a.*,u.email
-		FROM
-			govwa.activities AS a
-		INNER JOIN govwa.users AS u
-			ON u.id = a.id`)
+	var lastLoginScan, lastLogoutScan sql.NullTime
+	var activities []model.Activity
+	var layout = "2006-01-02 15:04:05"
+	var query = `SELECT
+					a.*,u.email
+				FROM
+					govwa.activities AS a
+				INNER JOIN govwa.users AS u
+					ON u.id = a.id`
+	rows, err := DB.Query(query)
 	if err != nil {
 		// debug
-		// log.Println(err.Error())
+		// log.Println(query)
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	defer rows.Close()
-	var lastLoginScan, lastLogoutScan sql.NullTime
 	for rows.Next() {
 		var activity model.Activity
 		if err := rows.Scan(
 			&activity.ID,
-			lastLoginScan,
-			lastLogoutScan,
+			&lastLoginScan,
+			&lastLogoutScan,
 			&activity.Status,
 			&activity.Email,
 		); err != nil {
 			// debug
-			// log.Println(err.Error())
+			// log.Println(query)
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		activity.LastLogin.Time = lastLoginScan.Time.Format("2006-1-2 15:4:5")
-		activity.LastLogout.Time = lastLogoutScan.Time.Format("2006-1-2 15:4:5")
+
+		activity.LastLogin = lastLoginScan.Time.Format(layout)
+		activity.LastLogout = lastLogoutScan.Time.Format(layout)
 		activities = append(activities, activity)
 	}
 	if err = rows.Err(); err != nil {
@@ -53,8 +57,28 @@ func dashboard(c *gin.Context) {
 		return
 	}
 	c.HTML(http.StatusOK, "views/dashboard.html", gin.H{
-		"title": "GO - Damn Vulnerable Web Application",
-		"books": activities,
-		"envs":  envs,
+		"title":      "GO - Damn Vulnerable Web Application",
+		"activities": activities,
+		"envs":       envs,
 	})
+}
+
+// setDashboardStatus functions set the value of dashboardChanged variable
+func setDashboardStatus(value bool) {
+	dashboardChanged = value
+}
+
+// getDashboardStatus functions returns value of dashboardChanged variable
+func getDashboardStatus() bool {
+	return dashboardChanged
+}
+
+// dashboardStatus functions handles GET /dashboard/status route
+// returns dashboardChanged true/false
+func dashboardStatus(c *gin.Context) {
+	status := getDashboardStatus()
+	if status {
+		setDashboardStatus(false)
+	}
+	c.JSON(http.StatusOK, gin.H{"status": status})
 }
