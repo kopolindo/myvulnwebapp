@@ -19,11 +19,18 @@ func dashboard(c *gin.Context) {
 	var activities []model.Activity
 	var layout = "2006-01-02 15:04:05"
 	var query = `SELECT
-					a.*,u.email
+					a.id,
+					a.last_login,
+					a.last_logout,
+					a.status,
+					u.email,
+					p.image
 				FROM
 					govwa.activities AS a
 				INNER JOIN govwa.users AS u
-					ON u.id = a.id`
+					ON u.id = a.id
+				INNER JOIN govwa.profiles AS p
+					ON p.id = a.id`
 	rows, err := DB.Query(query)
 	if err != nil {
 		// debug
@@ -40,6 +47,7 @@ func dashboard(c *gin.Context) {
 			&lastLogoutScan,
 			&activity.Status,
 			&activity.Email,
+			&activity.Image,
 		); err != nil {
 			// debug
 			// log.Println(query)

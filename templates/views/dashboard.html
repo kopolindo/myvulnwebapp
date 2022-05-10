@@ -27,6 +27,7 @@
         <thead class="thead-dark">
             <tr>
                 <th scope="col">ID</th>
+                <th scope="col">Image</th>
                 <th scope="col">Email</th>
                 <th scope="col">Last Login</th>
                 <th scope="col">Last Logout</th>
@@ -46,17 +47,17 @@
                 $(td).attr('id',rowData.ID+'_id')
             }
         },{
-            "targets": 1,
+            "targets": 2,
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).attr('id',rowData.ID+'_email');
             }
         },{
-            "targets": 2,
+            "targets": 3,
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).attr('id',rowData.ID+'_login');
             }
         },{
-            "targets": 3,
+            "targets": 4,
             "createdCell": function (td, cellData, rowData, row, col) {
                 $(td).attr('id',rowData.ID+'_logout');
             }
@@ -64,14 +65,17 @@
         "aaData":{{ .activities }},
         "aoColumns":
             [
-                {"mDataProp": "ID", className: "text-center"},
-                {"mDataProp": "Email.String", className: "text-center"},
-                {"mDataProp": "LastLogin", className: "text-center"},
-                {"mDataProp": "LastLogout", className: "text-center"},
+                {"mDataProp": "ID", className: "align-middle text-center"},
+                { "render": function (data, type, JsonResultRow, meta) {
+                            return '<img id="'+JsonResultRow.ID+'_profile" src="'+JsonResultRow.Image.String+'" height="60">';
+                        }, className: "text-center"},
+                {"mDataProp": "Email.String", className: "align-middle"},
+                {"mDataProp": "LastLogin", className: "align-middle text-center"},
+                {"mDataProp": "LastLogout", className: "align-middle text-center"},
                 { "render": function (data, type, JsonResultRow, meta) {
                             return '<img id="'+JsonResultRow.ID+'_semaphore" src="/img/'+JsonResultRow.Status.Int32+'.png" width="10" height="10">';
-                        }, className: "text-center"},
-                { "render": forceLogoutIcon, className: "text-center"}
+                        }, className: "align-middle text-center"},
+                { "render": forceLogoutIcon, className: "align-middle text-center"}
             ]
         } );
     } );
