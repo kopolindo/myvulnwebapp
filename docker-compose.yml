@@ -1,0 +1,25 @@
+version: "3.3"
+
+services:
+  mariadb-govwa:
+    image: mariadb:latest
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MARIADB_USER: govwauser
+      MARIADB_PASSWORD: ${MYSQL_GOVWA_PASSWORD}
+      MARIADB_DATABASE: govwa
+    volumes:
+      - ./db/0_init.sql:/docker-entrypoint-initdb.d/0_init.sql
+    networks:
+      - my-network
+  govwa:
+    build: .
+    depends_on:
+      - mariadb-govwa
+    ports:
+      - "8080:8080"
+    networks:
+      - my-network
+networks:
+  my-network:
+    driver: bridge
