@@ -18,6 +18,8 @@ services:
       - mariadb-govwa
     ports:
       - "8080:8080"
+    volumes:
+      - ./:/app/
     networks:
       - my-network
 networks:
