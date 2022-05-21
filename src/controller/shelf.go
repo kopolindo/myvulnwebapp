@@ -37,6 +37,7 @@ func books(c *gin.Context) {
 			&book.Genre,
 			&book.Height,
 			&book.Publisher,
+			&book.Cover,
 		); err != nil {
 			// debug
 			// log.Println(err.Error())
@@ -57,7 +58,7 @@ func books(c *gin.Context) {
 	})
 }
 
-// books function is a HTTP handler for GET /book/:id
+// books function is a HTTP handler for GET /book?q=id
 // returns ALL the books stored in DB that match a query
 // if parameter is INT than search for id
 // if parameter is STRING than search for any other field with LIKE
@@ -123,6 +124,7 @@ func book(c *gin.Context) {
 			&book.Genre,
 			&book.Height,
 			&book.Publisher,
+			&book.Cover,
 		); err != nil {
 			// debug
 			// log.Println(err.Error())
@@ -136,6 +138,8 @@ func book(c *gin.Context) {
 			)
 			return
 		}
+		// debug
+		// log.Printf("Book #%d: %v\n", book.ID, book)
 		books = append(books, book)
 	}
 	if err = rows.Err(); err != nil {
@@ -155,4 +159,60 @@ func book(c *gin.Context) {
 		"books": books,
 		"envs":  envs,
 	})
+}
+
+// booksDetails function is a HTTP handler for GET /book/:id
+// it shows page containing details (R/W) about a given book
+func bookDetails(c *gin.Context) {
+	// debug
+	// log.Println("Book details page")
+	var book model.Book
+	envs := SetEnvs(c)
+	bookid := c.Param("id")
+	bookIDInt, convErr := strconv.Atoi(bookid)
+	if convErr != nil {
+		log.Println(convErr.Error())
+		c.HTML(
+			http.StatusInternalServerError,
+			"views/error.html",
+			gin.H{
+				"error":        convErr.Error(),
+				"errorMessage": fmt.Sprintf("Error during conversion: %s", bookid),
+			},
+		)
+		return
+	}
+	query := fmt.Sprintf("SELECT * FROM `govwa`.`shelf` WHERE id = %d", bookIDInt)
+	// DEBUG
+	// fmt.Println(query)
+	DB := model.DB
+	err := DB.QueryRow(query).Scan(&book.ID, &book.Title, &book.Author, &book.Genre, &book.Height, &book.Publisher, &book.Cover)
+	switch {
+	case err == sql.ErrNoRows:
+		c.HTML(
+			http.StatusOK,
+			"views/error.html",
+			gin.H{
+				"error":        "Not found",
+				"errorMessage": fmt.Sprintf("Profile %s not found", userid),
+			},
+		)
+		return
+	case err != nil:
+		c.HTML(
+			http.StatusOK,
+			"views/error.html",
+			gin.H{
+				"error":        err.Error(),
+				"errorMessage": query,
+			},
+		)
+		return
+	default:
+		c.HTML(http.StatusOK, "views/book.html", gin.H{
+			"title": "GO - Damn Vulnerable Web Application",
+			"envs":  envs,
+			"book":  book,
+		})
+	}
 }

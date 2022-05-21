@@ -10,4 +10,5 @@ type Book struct {
 	Genre     sql.NullString
 	Height    sql.NullString
 	Publisher sql.NullString
+	Cover     sql.NullString
 }

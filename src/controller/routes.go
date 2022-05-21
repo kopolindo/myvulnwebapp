@@ -64,6 +64,7 @@ func Engine() *gin.Engine {
 	private.POST("/profile/:id/update", ensureLoggedIn, profileUpdate)
 	private.GET("/books", ensureLoggedIn, books)
 	private.GET("/book", ensureLoggedIn, book)
+	private.GET("/book/:id", ensureLoggedIn, bookDetails)
 	private.GET("/dashboard", ensureLoggedIn, dashboard)
 	private.GET("/dashboard/status", ensureLoggedIn, dashboardStatus)
 	return router

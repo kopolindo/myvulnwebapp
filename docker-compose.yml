@@ -8,6 +8,7 @@ services:
       MARIADB_USER: govwauser
       MARIADB_PASSWORD: ${MYSQL_GOVWA_PASSWORD}
       MARIADB_DATABASE: govwa
+    command: --init-file /docker-entrypoint-initdb.d/0_init.sql
     volumes:
       - ./db/0_init.sql:/docker-entrypoint-initdb.d/0_init.sql
     networks:
