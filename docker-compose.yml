@@ -22,6 +22,7 @@ services:
       - "8080:8080"
     volumes:
       - ./:/app/
+      - ./log-govwa/:/var/log/govwa
     networks:
       - my-network
 networks:

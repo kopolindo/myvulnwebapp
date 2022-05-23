@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 	"web/src/model"
+	"web/src/mylog"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -120,7 +121,7 @@ func UpdateActivities(id int, status bool) (sessionError error) {
 		query = "INSERT INTO `govwa`.`activities` (`id`, `last_logout`, `status`) values (?, NOW(), 0) ON DUPLICATE KEY UPDATE `last_logout` = NOW(), status = 0"
 	}
 	// DEBUG
-	// fmt.Println(query)
+	mylog.Debug.Println(query)
 	_, DBError := model.DB.Exec(query, id)
 	if DBError != nil {
 		return fmt.Errorf("error during activity update")

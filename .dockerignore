@@ -4,3 +4,5 @@
 .vscode
 .dockerignore
 .env
+log-govwa/*
+log-govwa

@@ -4,11 +4,13 @@ import (
 	"log"
 	"web/src/controller"
 	"web/src/model"
+	"web/src/mylog"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func init() {
+	mylog.Init()
 	model.Connect()
 }
 

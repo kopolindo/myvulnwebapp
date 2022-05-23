@@ -2,8 +2,8 @@ package model
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
+	"web/src/mylog"
 )
 
 var DB *sql.DB
@@ -17,13 +17,13 @@ func Connect() {
 	for {
 		DB, err = sql.Open("mysql", "govwauser:zrXzArJUPyPbB8W@tcp(mariadb-govwa:3306)/govwa?multiStatements=true&parseTime=true")
 		if err != nil {
-			fmt.Println(err.Error())
+			mylog.Error.Println(err.Error())
 		}
 		//defer DB.Close()
 
 		err = DB.Ping()
 		if err == nil {
-			fmt.Println("CONNECTED! GO ON!")
+			mylog.Info.Println("CONNECTED! GO ON!")
 			break
 		}
 		time.Sleep(1 * time.Second)

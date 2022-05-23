@@ -3,11 +3,11 @@ package controller
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"web/src/model"
+	"web/src/mylog"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -41,7 +41,7 @@ func loginPost(c *gin.Context) {
 	emailIn := strings.Replace(c.PostForm("email"), "'", "\\'", -1)
 	passwordIn := strings.Replace(c.PostForm("password"), "'", "\\'", -1)
 	// debug
-	// log.Println(emailIn, passwordIn)
+	mylog.Debug.Println(emailIn, passwordIn)
 	qu := fmt.Sprintf("SELECT id FROM govwa.users where email = '%s' limit 1", emailIn)
 	errU := model.DB.QueryRow(qu).Scan(&idScan)
 	switch {
@@ -79,8 +79,8 @@ func loginPost(c *gin.Context) {
 		INNER JOIN govwa.profiles as p ON u.id = p.id
 		WHERE u.id = '%d' and (u.password = '%s') limit 1`, idScan, passwordIn)
 	// debug
-	// fmt.Println(qp)
-	// qyuery DB
+	mylog.Debug.Println(qp)
+	// query DB
 	errP := model.DB.QueryRow(qp).Scan(&idScan, &emailScan, &passwordScan, &roleScan, &fnameScan, &lnameScan)
 	switch {
 	case errP == sql.ErrNoRows:
@@ -127,7 +127,7 @@ func logoutGet(c *gin.Context) {
 
 	user := session.Get(userid)
 	if user == nil {
-		log.Printf("ERROR invalid session token %v\n", user)
+		mylog.Error.Printf("ERROR invalid session token %v\n", user)
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid session token [%v]\n", user)})
 		return
 	}
@@ -165,10 +165,10 @@ func logoutByAdmin(c *gin.Context) {
 			user.UserID)
 		DBError := model.DB.QueryRow(query).Scan(&firstName, &lastLogoutScan)
 		if DBError != nil {
-			fmt.Printf("error during activity lookup\n\t%s", DBError.Error())
+			mylog.Debug.Printf("error during activity lookup\n\t%s", DBError.Error())
 		}
 		lastLogout := lastLogoutScan.Time.Format(layout)
-		fmt.Println(lastLogout)
+		mylog.Debug.Println(lastLogout)
 		c.JSON(200, gin.H{"status": "ok", "firstName": firstName, "lastLogout": lastLogout})
 	}
 }

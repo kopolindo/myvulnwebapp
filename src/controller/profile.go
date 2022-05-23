@@ -3,11 +3,11 @@ package controller
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 	"path"
 	"path/filepath"
 	"web/src/model"
+	"web/src/mylog"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -42,7 +42,7 @@ func profile(c *gin.Context) {
 					u.id = '%s'
 				LIMIT 1`, userid)
 	// DEBUG
-	// fmt.Println(query)
+	mylog.Debug.Println(query)
 	DB := model.DB
 	err := DB.QueryRow(query).Scan(&profile.ID, &profile.Role, &profile.FirstName, &profile.LastName, &profile.Email, &profile.Image)
 	switch {
@@ -93,7 +93,7 @@ func profileUpdateGet(c *gin.Context) {
 					u.id = '%d'
 				LIMIT 1`, userid)
 	// DEBUG
-	// fmt.Println(query)
+	mylog.Debug.Println(query)
 	DB := model.DB
 	err := DB.QueryRow(query).Scan(&profile.ID, &profile.FirstName, &profile.LastName, &profile.Image)
 	switch {
@@ -171,12 +171,12 @@ func profileUpdate(c *gin.Context) {
 			id = '%s'`, newFirstName, newLastName, userid)
 	}
 	// DEBUG
-	// fmt.Println(query)
+	mylog.Debug.Println(query)
 	DB := model.DB
 	result, e := DB.Exec(query)
 	if e != nil {
 		// DEBUG
-		log.Printf("Error executing query (Exec): %s\n", err.Error())
+		mylog.Debug.Printf("Error executing query (Exec): %s\n", err.Error())
 		c.HTML(
 			http.StatusOK,
 			"views/error.html",
@@ -189,7 +189,7 @@ func profileUpdate(c *gin.Context) {
 	}
 	rows, err := result.RowsAffected()
 	if err != nil {
-		log.Printf("Error retrieving rows (RowsAffected): %s\n", err.Error())
+		mylog.Debug.Printf("Error retrieving rows (RowsAffected): %s\n", err.Error())
 		c.HTML(
 			http.StatusOK,
 			"views/error.html",
@@ -201,7 +201,7 @@ func profileUpdate(c *gin.Context) {
 		return
 	}
 	if rows != 1 {
-		log.Printf("expected to affect 1 row, affected %d\n", rows)
+		mylog.Debug.Printf("expected to affect 1 row, affected %d\n", rows)
 		c.HTML(
 			http.StatusOK,
 			"views/error.html",

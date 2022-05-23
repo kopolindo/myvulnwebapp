@@ -3,10 +3,10 @@ package controller
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"web/src/model"
+	"web/src/mylog"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +22,7 @@ func books(c *gin.Context) {
 	rows, err := DB.Query("SELECT * FROM `govwa`.`shelf`")
 	if err != nil {
 		// debug
-		// log.Println(err.Error())
+		mylog.Debug.Println(err.Error())
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -40,14 +40,14 @@ func books(c *gin.Context) {
 			&book.Cover,
 		); err != nil {
 			// debug
-			// log.Println(err.Error())
+			mylog.Debug.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 		books = append(books, book)
 	}
 	if err = rows.Err(); err != nil {
-		log.Fatalf(err.Error())
+		mylog.Error.Println(err.Error())
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -88,7 +88,7 @@ func book(c *gin.Context) {
 	}
 	query := baseQuery + criteria
 	// debug
-	// log.Println(query)
+	mylog.Debug.Println(query)
 	DB := model.DB
 	rows, err := DB.Query(query)
 	switch {
@@ -127,7 +127,7 @@ func book(c *gin.Context) {
 			&book.Cover,
 		); err != nil {
 			// debug
-			// log.Println(err.Error())
+			mylog.Debug.Println(err.Error())
 			c.HTML(
 				http.StatusInternalServerError,
 				"views/error.html",
@@ -139,11 +139,11 @@ func book(c *gin.Context) {
 			return
 		}
 		// debug
-		// log.Printf("Book #%d: %v\n", book.ID, book)
+		mylog.Debug.Printf("Book #%d: %v\n", book.ID, book)
 		books = append(books, book)
 	}
 	if err = rows.Err(); err != nil {
-		log.Println(err.Error())
+		mylog.Error.Println(err.Error())
 		c.HTML(
 			http.StatusInternalServerError,
 			"views/error.html",
@@ -165,13 +165,13 @@ func book(c *gin.Context) {
 // it shows page containing details (R/W) about a given book
 func bookDetails(c *gin.Context) {
 	// debug
-	// log.Println("Book details page")
+	mylog.Debug.Println("Book details page")
 	var book model.Book
 	envs := SetEnvs(c)
 	bookid := c.Param("id")
 	bookIDInt, convErr := strconv.Atoi(bookid)
 	if convErr != nil {
-		log.Println(convErr.Error())
+		mylog.Error.Println(convErr.Error())
 		c.HTML(
 			http.StatusInternalServerError,
 			"views/error.html",
@@ -184,7 +184,7 @@ func bookDetails(c *gin.Context) {
 	}
 	query := fmt.Sprintf("SELECT * FROM `govwa`.`shelf` WHERE id = %d", bookIDInt)
 	// DEBUG
-	// fmt.Println(query)
+	mylog.Debug.Println(query)
 	DB := model.DB
 	err := DB.QueryRow(query).Scan(&book.ID, &book.Title, &book.Author, &book.Genre, &book.Height, &book.Publisher, &book.Cover)
 	switch {

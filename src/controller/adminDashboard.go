@@ -2,9 +2,9 @@ package controller
 
 import (
 	"database/sql"
-	"log"
 	"net/http"
 	"web/src/model"
+	"web/src/mylog"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,7 +34,7 @@ func dashboard(c *gin.Context) {
 	rows, err := DB.Query(query)
 	if err != nil {
 		// debug
-		// log.Println(query)
+		mylog.Debug.Println(query)
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -50,7 +50,7 @@ func dashboard(c *gin.Context) {
 			&activity.Image,
 		); err != nil {
 			// debug
-			// log.Println(query)
+			mylog.Debug.Println(query)
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
@@ -60,7 +60,7 @@ func dashboard(c *gin.Context) {
 		activities = append(activities, activity)
 	}
 	if err = rows.Err(); err != nil {
-		log.Fatalf(err.Error())
+		mylog.Error.Println(err.Error())
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
