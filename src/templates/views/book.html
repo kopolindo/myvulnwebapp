@@ -19,14 +19,15 @@
 }
 </style>
 <div class="container d-flex justify-content-center align-items-center">
-    <div class="card text-center">
+    <div class="card text-center w-75">
         <div class="py-4 p-2">
-            <div>
-                <img src="{{ .book.Cover.String }}" class="rounded" width="300">
+            <div id="image_{{ .book.Title.String }}">
+                {{ template "layouts/book.svg" .book }}
+                <!--<img src="{{ .book.Cover.String }}" class="rounded" width="300">-->
             </div>
-            <div class="mt-3 d-flex flex-row justify-content-center">
+            <!--<div class="mt-3 d-flex flex-row justify-content-center">
                 <h5 style="text-transform: capitalize;">{{ .book.Title.String }}</h5>
-            </div>
+            </div>-->
         </div>
         <ul class="list-unstyled list">
             <li>
@@ -41,8 +42,12 @@
                 <span style="font-weight: bold;">Publisher</span>
                 <span class="mr-1">{{ .book.Publisher.String }}</span>
             </li>
+            <li>
+                <span style="font-weight: bold;">Back Cover</span>
+                <span class="mr-1">{{ .book.BackCover.String }}</span>
+            </li>            
         </ul>
     </div>
 </div>
-{{ template "layouts/footer.html" .}}
+{{ template "layouts/footer.html" . }}
 {{end}}

@@ -3,8 +3,10 @@ package controller
 import (
 	"database/sql"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 	"web/src/model"
 	"web/src/mylog"
 
@@ -38,6 +40,7 @@ func books(c *gin.Context) {
 			&book.Height,
 			&book.Publisher,
 			&book.Cover,
+			&book.BackCover,
 		); err != nil {
 			// debug
 			mylog.Debug.Println(err.Error())
@@ -125,6 +128,7 @@ func book(c *gin.Context) {
 			&book.Height,
 			&book.Publisher,
 			&book.Cover,
+			&book.BackCover,
 		); err != nil {
 			// debug
 			mylog.Debug.Println(err.Error())
@@ -186,7 +190,18 @@ func bookDetails(c *gin.Context) {
 	// DEBUG
 	mylog.Debug.Println(query)
 	DB := model.DB
-	err := DB.QueryRow(query).Scan(&book.ID, &book.Title, &book.Author, &book.Genre, &book.Height, &book.Publisher, &book.Cover)
+	err := DB.QueryRow(query).Scan(
+		&book.ID,
+		&book.Title,
+		&book.Author,
+		&book.Genre,
+		&book.Height,
+		&book.Publisher,
+		&book.Cover,
+		&book.BackCover,
+	)
+	book.UnescapedTitle = template.HTML(strings.Replace(book.Title.String, " ", "<br>", 1))
+	fmt.Printf("TITLE: %s\n", book.UnescapedTitle)
 	switch {
 	case err == sql.ErrNoRows:
 		c.HTML(

@@ -1,14 +1,19 @@
 package model
 
-import "database/sql"
+import (
+	"database/sql"
+	"html/template"
+)
 
 // Book struct is to store books information
 type Book struct {
-	ID        int
-	Title     sql.NullString
-	Author    sql.NullString
-	Genre     sql.NullString
-	Height    sql.NullString
-	Publisher sql.NullString
-	Cover     sql.NullString
+	ID             int
+	UnescapedTitle template.HTML
+	Title          sql.NullString
+	Author         sql.NullString
+	Genre          sql.NullString
+	Height         sql.NullString
+	Publisher      sql.NullString
+	Cover          sql.NullString
+	BackCover      sql.NullString
 }
