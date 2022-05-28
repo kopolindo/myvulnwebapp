@@ -32,6 +32,7 @@ func Engine() *gin.Engine {
 	router.Static("/css", "./static/css")
 	router.Static("/img", "./static/assets/img")
 	router.Static("/public/img", "./static/public/profiles")
+	router.Static("/public/covers", "./static/public/bookCovers")
 	router.Static("/vendor", "./static/vendor")
 	router.Static("/js", "./static/js")
 	router.StaticFile("/404", "./templates/views/404.html")
@@ -65,6 +66,7 @@ func Engine() *gin.Engine {
 	private.GET("/books", ensureLoggedIn, books)
 	private.GET("/book", ensureLoggedIn, book)
 	private.GET("/book/:id", ensureLoggedIn, bookDetails)
+	private.POST("/book/:id/update", ensureLoggedIn, bookDetailsUpdate)
 	private.GET("/dashboard", ensureLoggedIn, dashboard)
 	private.GET("/dashboard/status", ensureLoggedIn, dashboardStatus)
 	return router

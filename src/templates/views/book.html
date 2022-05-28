@@ -29,24 +29,35 @@
                 <h5 style="text-transform: capitalize;">{{ .book.Title.String }}</h5>
             </div>-->
         </div>
-        <ul class="list-unstyled list">
-            <li>
-                <span style="font-weight: bold;">Author</span>
-                <span class="mr-1">{{ .book.Author.String }}</span>
-            </li>
-            <li>
-                <span style="font-weight: bold;">Genre</span>
-                <span class="mr-1">{{ .book.Genre.String }}</span>
-            </li>
-            <li>
-                <span style="font-weight: bold;">Publisher</span>
-                <span class="mr-1">{{ .book.Publisher.String }}</span>
-            </li>
-            <li>
-                <span style="font-weight: bold;">Back Cover</span>
-                <span class="mr-1">{{ .book.BackCover.String }}</span>
-            </li>            
-        </ul>
+        <form class="row g-3" action="/api/book/{{ .book.ID }}/update" method="POST" role="form" enctype="multipart/form-data">
+            <div class="col-md-6">
+              <label for="inputTitle" class="form-label">Title</label>
+              <input type="title" class="form-control" id="inputTitle" name="inputTitle">
+            </div>
+            <div class="col-md-6">
+                <label for="inputAuthor" class="form-label">Author</label>
+                <input type="author" class="form-control" id="inputAuthor" name="inputAuthor">
+              </div>
+            <div class="col-md-6">
+              <label for="inputGenre" class="form-label">Genre</label>
+              <input type="genre" class="form-control" id="inputGenre" name="inputGenre">
+            </div>
+            <div class="col-md-6">
+              <label for="inputPublisher" class="form-label">Publisher</label>
+              <input type="publisher" class="form-control" id="inputPublisher" name="inputPublisher">
+            </div>
+            <div class="col-md-6">
+                <label for="inputCover" class="form-label">Cover Image</label>
+                <input class="form-control" id="inputCover" type="file" id="inputCover" name="inputCover">
+            </div>
+            <div class="col-md-6">
+                <label for="inputBackCover" class="form-label">Backcover</label>
+                <textarea class="form-control" id="inputBackCover" name="inputBackCover" rows="10" placeholder="# Insert Markdown here..."></textarea>
+            </div>            
+            <div class="col-md-12">
+              <button type="submit" class="btn btn-primary">Publish</button>
+            </div>
+          </form>
     </div>
 </div>
 {{ template "layouts/footer.html" . }}

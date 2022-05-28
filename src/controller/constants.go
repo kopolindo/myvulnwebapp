@@ -12,6 +12,7 @@ const (
 	cookieName         = "_govwa"
 	uploadPath         = "static/public"
 	profilePicturePath = "profiles"
+	bookCoverPath      = "bookCovers"
 )
 
 var (

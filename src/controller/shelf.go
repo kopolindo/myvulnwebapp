@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"web/src/model"
@@ -13,7 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// books function is a HTTP handler for GET /books
+// books function is a HTTP handler for GET /api/books
 // returns ALL the books stored in DB as a slice of Book objects
 // in users' browser bootstrap will render the JSON in a data table
 func books(c *gin.Context) {
@@ -61,7 +63,7 @@ func books(c *gin.Context) {
 	})
 }
 
-// books function is a HTTP handler for GET /book?q=id
+// books function is a HTTP handler for GET /api/book?q=id
 // returns ALL the books stored in DB that match a query
 // if parameter is INT than search for id
 // if parameter is STRING than search for any other field with LIKE
@@ -163,6 +165,133 @@ func book(c *gin.Context) {
 		"books": books,
 		"envs":  envs,
 	})
+}
+
+// bookDetailsUpdate handles POST requests for /api/book/:id/update route
+// and update book details with information supplied by form
+// cover images goes in /static/public/bookCovers/
+
+func bookDetailsUpdate(c *gin.Context) {
+	// debug
+	mylog.Debug.Println("Update book details")
+	var query, values string
+	//envs := SetEnvs(c)
+	bookid := c.Param("id")
+	bookIDInt, convErr := strconv.Atoi(bookid)
+	if convErr != nil {
+		mylog.Error.Println(convErr.Error())
+		c.HTML(
+			http.StatusInternalServerError,
+			"views/error.html",
+			gin.H{
+				"error":        convErr.Error(),
+				"errorMessage": fmt.Sprintf("Error during conversion: %s", bookid),
+			},
+		)
+		return
+	}
+	// Handle form input
+	inputTitle := c.PostForm("inputTitle")
+	if inputTitle != "" {
+		values = fmt.Sprintf("title = '%s'", inputTitle)
+	}
+	inputAuthor := c.PostForm("inputAuthor")
+	if inputAuthor != "" {
+		if values != "" {
+			values = fmt.Sprintf("%s,author = '%s'", values, inputAuthor)
+		} else {
+			values = fmt.Sprintf("author = '%s'", inputAuthor)
+		}
+	}
+	inputGenre := c.PostForm("inputGenre")
+	if inputGenre != "" {
+		if values != "" {
+			values = fmt.Sprintf("%s,genre = '%s'", values, inputGenre)
+		} else {
+			values = fmt.Sprintf("genre = '%s'", inputGenre)
+		}
+	}
+	inputPublisher := c.PostForm("inputPublisher")
+	if inputPublisher != "" {
+		if values != "" {
+			values = fmt.Sprintf("%s,publisher = '%s'", values, inputPublisher)
+		} else {
+			values = fmt.Sprintf("publisher = '%s'", inputPublisher)
+		}
+	}
+	inputBackCover := c.PostForm("inputBackCover")
+	if inputBackCover != "" {
+		if values != "" {
+			values = fmt.Sprintf("%s,back_cover = '%s'", values, inputBackCover)
+		} else {
+			values = fmt.Sprintf("back_cover = '%s'", inputBackCover)
+		}
+	}
+	file, err := c.FormFile("inputCover")
+	if err == nil {
+		fname := filepath.Base(file.Filename)
+		filename := path.Join(uploadPath, bookCoverPath, fname)
+		if err := c.SaveUploadedFile(file, filename); err != nil {
+			c.String(http.StatusBadRequest, "upload file err: %s", err.Error())
+			return
+		}
+		if values != "" {
+			values = fmt.Sprintf("%s,cover = '/public/covers/%s'", values, fname)
+		} else {
+			values = fmt.Sprintf("cover = '/public/covers/%s'", fname)
+		}
+	}
+	// Query creation
+	query = fmt.Sprintf(`
+		UPDATE
+			govwa.shelf
+		SET
+			%s
+		WHERE
+			id = '%d'`, values, bookIDInt)
+	// DEBUG
+	mylog.Debug.Println(query)
+	DB := model.DB
+	result, e := DB.Exec(query)
+	if e != nil {
+		// DEBUG
+		mylog.Debug.Printf("Error executing query (Exec): %s\n", err.Error())
+		c.HTML(
+			http.StatusOK,
+			"views/error.html",
+			gin.H{
+				"error":        err.Error(),
+				"errorMessage": query,
+			},
+		)
+		return
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		mylog.Debug.Printf("Error retrieving rows (RowsAffected): %s\n", err.Error())
+		c.HTML(
+			http.StatusOK,
+			"views/error.html",
+			gin.H{
+				"error":        err.Error(),
+				"errorMessage": query,
+			},
+		)
+		return
+	}
+	if rows != 1 {
+		mylog.Debug.Printf("expected to affect 1 row, affected %d\n", rows)
+		c.HTML(
+			http.StatusOK,
+			"views/error.html",
+			gin.H{
+				"error":        err.Error(),
+				"errorMessage": fmt.Sprintf("expected to affect 1 row, affected %d\n", rows),
+			},
+		)
+		return
+	}
+	c.Redirect(http.StatusFound, fmt.Sprintf("/api/book/%d", bookIDInt))
 }
 
 // booksDetails function is a HTTP handler for GET /book/:id

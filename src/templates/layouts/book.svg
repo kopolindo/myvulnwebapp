@@ -252,17 +252,20 @@
   </defs>
   <image 
       href="{{ .Cover.String }}" 
-      x="730"
-      y="420"
-      height="450"
+      x="710"
+      y="370"
+      height="520"
       transform="skewY(-10)"
       />
-  <foreignObject x="650" y="250" width="400" height="200" transform="rotate(-10 20,40)">
+  <foreignObject x="670" y="260" width="400" height="200" transform="skewY(-10)">
       <p style="font-size:35px;">{{ .UnescapedTitle }}</p>
   </foreignObject>
-  <text x="700" y="880" fill="black" font-size="20" transform="rotate(-10 20,40)">{{ .Author.String }}</text>
-  <text x="-750" y="600" fill="black" font-size="30" transform="rotate(-90 20,40)">{{ .Publisher.String }}</text>
-  <text x="100" y="200" fill="black" font-size="30" transform="rotate(10 20,40)">{{ .BackCover.String }}</text>
+  <text x="770" y="910" fill="black" font-size="20" transform="skewY(-10)">{{ .Author.String }}</text>
+  <text x="-750" y="600" fill="black" font-size="20" transform="rotate(-90 20,40)">{{ .Publisher.String }}</text>
+  <foreignObject x="70" y="150" width="400" height="500" transform="skewY(10)">
+      <p style="font-size:20px;">{{ .BackCover.String }}</p>
+  </foreignObject>
+  <!-- <text x="100" y="200" fill="black" font-size="30" transform="rotate(10 20,40)">{{ .BackCover.String }}</text> -->
   <path
      style="fill:none;stroke:#000000;stroke-width:10.00000006;stroke-miterlimit:4;stroke-dasharray:none"
      d="m 571.42132,136.08041 c -20.43863,0 -36.92409,12.27173 -37.15625,27.59375 l 0,0.25 0,633.21875 0.0312,0 0,18.53125 0,0.34375 c 0.23214,15.28487 16.8426,27.5625 37.28125,27.5625 20.43865,0 37.04909,-12.27763 37.28125,-27.5625 l 0,-0.34375 0,-18.53125 0,-5 0,-628.21875 0,-0.25 c -0.23214,-15.32202 -16.99885,-27.59375 -37.4375,-27.59375 z"
