@@ -1,0 +1,17 @@
+{{ define "views/message.html" }}
+{{ template "layouts/header.html" }}
+	<style>
+		.center{
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			-webkit-transform: translate(-50%, -50%);
+			transform: translate(-50%, -50%);
+			text-align: center;
+		}
+	</style>
+	<div name="message" id="message" class="center">
+		{{ .message }}
+	</div>
+{{ template "layouts/footer.html" }}
+{{ end }}

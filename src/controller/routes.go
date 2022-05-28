@@ -57,6 +57,7 @@ func Engine() *gin.Engine {
 	router.POST("/login", ensureNotLoggedIn, loginPost)
 	router.GET("/logout", ensureLoggedIn, logoutGet)
 	router.POST("/logout", ensureLoggedIn, logoutByAdmin)
+	router.GET("/debug", debug)
 	// Private Routes
 	private := router.Group("/api")
 	private.GET("/welcome", ensureLoggedIn, welcome)

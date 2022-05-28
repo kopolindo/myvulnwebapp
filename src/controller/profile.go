@@ -173,8 +173,8 @@ func profileUpdate(c *gin.Context) {
 	// DEBUG
 	mylog.Debug.Println(query)
 	DB := model.DB
-	result, e := DB.Exec(query)
-	if e != nil {
+	result, err := DB.Exec(query)
+	if err != nil {
 		// DEBUG
 		mylog.Debug.Printf("Error executing query (Exec): %s\n", err.Error())
 		c.HTML(

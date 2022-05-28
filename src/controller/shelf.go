@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -228,10 +227,10 @@ func bookDetailsUpdate(c *gin.Context) {
 		}
 	}
 	file, err := c.FormFile("inputCover")
+	mylog.Debug.Println("== FILENAME ==", file.Filename)
 	if err == nil {
 		fname := filepath.Base(file.Filename)
-		filename := path.Join(uploadPath, bookCoverPath, fname)
-		if err := c.SaveUploadedFile(file, filename); err != nil {
+		if err := c.SaveUploadedFile(file, file.Filename); err != nil {
 			c.String(http.StatusBadRequest, "upload file err: %s", err.Error())
 			return
 		}
@@ -252,10 +251,10 @@ func bookDetailsUpdate(c *gin.Context) {
 	// DEBUG
 	mylog.Debug.Println(query)
 	DB := model.DB
-	result, e := DB.Exec(query)
-	if e != nil {
+	result, err := DB.Exec(query)
+	if err != nil {
 		// DEBUG
-		mylog.Debug.Printf("Error executing query (Exec): %s\n", err.Error())
+		mylog.Error.Printf("Error executing query (Exec): %s\n", err.Error())
 		c.HTML(
 			http.StatusOK,
 			"views/error.html",
@@ -268,7 +267,7 @@ func bookDetailsUpdate(c *gin.Context) {
 	}
 	rows, err := result.RowsAffected()
 	if err != nil {
-		mylog.Debug.Printf("Error retrieving rows (RowsAffected): %s\n", err.Error())
+		mylog.Error.Printf("Error retrieving rows (RowsAffected): %s\n", err.Error())
 		c.HTML(
 			http.StatusOK,
 			"views/error.html",
@@ -280,7 +279,8 @@ func bookDetailsUpdate(c *gin.Context) {
 		return
 	}
 	if rows != 1 {
-		mylog.Debug.Printf("expected to affect 1 row, affected %d\n", rows)
+		mylog.Error.Printf("== QUERY == %s\n", query)
+		mylog.Error.Printf("expected to affect 1 row, affected %d\n", rows)
 		c.HTML(
 			http.StatusOK,
 			"views/error.html",

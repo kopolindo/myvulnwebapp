@@ -262,7 +262,7 @@
   </foreignObject>
   <text x="770" y="910" fill="black" font-size="20" transform="skewY(-10)">{{ .Author.String }}</text>
   <text x="-750" y="600" fill="black" font-size="20" transform="rotate(-90 20,40)">{{ .Publisher.String }}</text>
-  <foreignObject x="70" y="150" width="400" height="500" transform="skewY(10)">
+  <foreignObject x="70" y="100" width="400" height="600" transform="skewY(10)">
       <p style="font-size:20px;">{{ .BackCover.String }}</p>
   </foreignObject>
   <!-- <text x="100" y="200" fill="black" font-size="30" transform="rotate(10 20,40)">{{ .BackCover.String }}</text> -->
