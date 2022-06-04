@@ -227,22 +227,28 @@ func bookDetailsUpdate(c *gin.Context) {
 		}
 	}
 	file, err := c.FormFile("inputCover")
-	mylog.Debug.Println("== FILENAME ==", file.Filename)
 	if err == nil {
-		fname := filepath.Base(file.Filename)
-		if err := c.SaveUploadedFile(file, file.Filename); err != nil {
+		c.Request.ParseMultipartForm((1 << 10) * 24)
+		formFileName := strings.Replace(strings.Split(strings.Split(c.Request.MultipartForm.File["inputCover"][0].Header.Get("Content-Disposition"), ";")[2], "=")[1], "\"", "", -1)
+		savePath := fmt.Sprintf("%s/%s/%s", uploadPath, bookCoverPath, formFileName)
+		baseName := filepath.Base(formFileName)
+		mylog.Debug.Println("== FORMFILE ==", formFileName)
+		mylog.Debug.Println("== PATH ==", savePath)
+		mylog.Debug.Println("== BASENAME ==", filepath.Base(formFileName))
+		mylog.Debug.Println("== FILE CONTENT ==", c.Request.MultipartForm.File["inputCover"][0])
+		if err := c.SaveUploadedFile(file, savePath); err != nil {
 			c.String(http.StatusBadRequest, "upload file err: %s", err.Error())
 			return
 		}
 		if values != "" {
-			values = fmt.Sprintf("%s,cover = '/public/covers/%s'", values, fname)
+			values = fmt.Sprintf("%s,cover = '/public/covers/%s'", values, baseName)
 		} else {
-			values = fmt.Sprintf("cover = '/public/covers/%s'", fname)
+			values = fmt.Sprintf("cover = '/public/covers/%s'", baseName)
 		}
 	}
 	// Query creation
 	query = fmt.Sprintf(`
-		UPDATE
+		UPDATE IGNORE
 			govwa.shelf
 		SET
 			%s
@@ -285,7 +291,7 @@ func bookDetailsUpdate(c *gin.Context) {
 			http.StatusOK,
 			"views/error.html",
 			gin.H{
-				"error":        err.Error(),
+				"error":        "no error from MariaDB",
 				"errorMessage": fmt.Sprintf("expected to affect 1 row, affected %d\n", rows),
 			},
 		)

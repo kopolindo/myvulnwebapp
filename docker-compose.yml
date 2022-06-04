@@ -11,6 +11,7 @@ services:
     command: --init-file /docker-entrypoint-initdb.d/0_init.sql
     volumes:
       - ./db/0_init.sql:/docker-entrypoint-initdb.d/0_init.sql
+      - ./db/data:/var/lib/mysql
     networks:
       - my-network
   govwa:

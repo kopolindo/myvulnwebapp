@@ -6,3 +6,6 @@
 .env
 log-govwa/*
 log-govwa
+src/govwa
+*.bak
+db/data
