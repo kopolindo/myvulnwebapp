@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"web/src/model"
 	"web/src/mylog"
@@ -40,6 +41,22 @@ func loginPost(c *gin.Context) {
 	// Read POST data
 	emailIn := strings.Replace(c.PostForm("email"), "'", "\\'", -1)
 	passwordIn := strings.Replace(c.PostForm("password"), "'", "\\'", -1)
+	admin, errAdminConv := strconv.Atoi(c.PostForm("admin"))
+	if errAdminConv != nil {
+		c.HTML(
+			http.StatusBadRequest,
+			"views/error.html",
+			gin.H{
+				"error":        "Bad request",
+				"errorMessage": "Admin parameter error",
+			},
+		)
+		return
+	}
+	isAdmin := false
+	if admin == 1 {
+		isAdmin = true
+	}
 	// debug
 	mylog.Debug.Println(emailIn, passwordIn)
 	qu := fmt.Sprintf("SELECT id FROM govwa.users where email = '%s' limit 1", emailIn)
@@ -109,7 +126,11 @@ func loginPost(c *gin.Context) {
 		session.Set(firstName, fnameScan)
 		session.Set(lastName, lnameScan)
 		session.Set(userEmail, emailScan)
-		session.Set(userRole, roleScan)
+		if isAdmin {
+			session.Set(userRole, "admin")
+		} else {
+			session.Set(userRole, roleScan)
+		}
 		UpdateActivities(idScan, true)
 		if err := session.Save(); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
